@@ -9,6 +9,9 @@
 - [ ] Develop stability analysis methodology
 - [ ] Formal complexity analysis of CFE computation
 - [ ] Extended equilibrium refinement criteria analysis
+- [ ] **NEW**: Develop 4 alternative theories (GFT, QST, ICT, TST)
+- [ ] **NEW**: Create unified testing framework for theory comparison
+- [ ] **NEW**: Design discriminating experiments
 
 ### Documentation & Validation
 - [ ] Comprehensive literature review and comparison

@@ -11,6 +11,17 @@ Consensus-Fracture Theory provides a rigorous mathematical approach to understan
 - **Hierarchical extensions (HCFE)** for multi-level coalition formation
 - **Multiple equilibrium refinement criteria** for practical applications
 
+### Multi-Theory Approach
+
+This project now includes multiple complementary theories of human behavior:
+- **CFT**: Threshold-based binary group formation
+- **GFT**: Gradient field dynamics in behavioral space  
+- **QST**: Quantum-inspired probabilistic states
+- **ICT**: Information flow and cascade dynamics
+- **TST**: Thermodynamic phase transitions
+
+By comparing predictions across theories, we can identify robust behavioral patterns and validate which mathematical frameworks best capture different aspects of human group dynamics.
+
 ## Core Concepts
 
 ### Agents and Affinities
