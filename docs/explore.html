@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Explore CFT - Interactive Theory Visualizations</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ── Explore-page overrides ─────────────────────────────────────── */
+    .viz-hero {
+      background: linear-gradient(160deg, #0d1117 0%, #1a1f2e 100%);
+      color: #e6edf3;
+      padding: 4rem 0 3rem;
+    }
+    .viz-hero h1 { font-size: clamp(1.8rem,4vw,2.5rem); font-weight: 800; letter-spacing:-.03em; margin-bottom:.75rem; }
+    .viz-hero p  { color:#8b949e; max-width:560px; font-size:1rem; }
+
+    .viz-section { padding: 4rem 0; }
+    .viz-section + .viz-section { border-top: 1px solid var(--border); }
+    .viz-section.dark {
+      background: #f0f4f8;
+    }
+
+    .viz-layout {
+      display: grid;
+      grid-template-columns: 3fr 2fr;
+      gap: 2.5rem;
+      align-items: start;
+    }
+    @media(max-width:760px){ .viz-layout { grid-template-columns:1fr; } }
+
+    .canvas-wrap {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+    canvas { display:block; width:100%; }
+
+    .canvas-label {
+      position: absolute;
+      top: .6rem; left: .75rem;
+      font-size: .7rem; font-weight: 700;
+      letter-spacing: .08em; text-transform: uppercase;
+      color: var(--muted);
+      background: rgba(255,255,255,.85);
+      padding: .15em .5em; border-radius: 4px;
+    }
+
+    /* controls */
+    .controls { display:flex; flex-direction:column; gap:1.25rem; }
+    .ctrl-group {}
+    .ctrl-label {
+      font-size: .72rem; font-weight:700; text-transform:uppercase;
+      letter-spacing:.1em; color:var(--muted); margin-bottom:.4rem;
+      display:flex; justify-content:space-between; align-items:center;
+    }
+    .ctrl-val {
+      font-family: "SF Mono", monospace;
+      font-size: .85rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    input[type=range] {
+      width: 100%;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .stat-box {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: .9rem 1rem;
+      font-size: .82rem;
+      line-height: 1.6;
+    }
+    .stat-box strong { font-weight:700; color:var(--text); }
+    .stat-box .lbl { color:var(--muted); font-size:.75rem; }
+
+    .btn-row { display:flex; gap:.6rem; flex-wrap:wrap; }
+    .btn-sm {
+      padding: .4em .9em;
+      border-radius: 6px;
+      font-size: .8rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+    }
+    .btn-sm.primary { background: var(--accent); color:#fff; border-color:var(--accent); }
+    .btn-sm:hover { opacity:.85; }
+    .btn-sm:active { transform: scale(.97); }
+
+    .callout {
+      border-left: 3px solid var(--accent);
+      background: var(--accent-bg);
+      padding: .7rem 1rem;
+      border-radius: 0 6px 6px 0;
+      font-size: .82rem;
+      color: #1e3a8a;
+      line-height: 1.55;
+    }
+    .callout strong { font-weight:700; }
+
+    .theory-badge {
+      display: inline-block;
+      font-size: .7rem; font-weight:700; letter-spacing:.06em;
+      text-transform: uppercase;
+      padding: .2em .6em; border-radius: 4px;
+      margin-bottom: .5rem;
+    }
+
+    .insight-list { list-style:none; padding:0; margin:0; }
+    .insight-list li {
+      padding: .3rem 0 .3rem 1.2rem;
+      position: relative;
+      font-size: .85rem;
+      color: var(--muted);
+      line-height: 1.5;
+      border-bottom: 1px solid var(--border);
+    }
+    .insight-list li:last-child { border-bottom: none; }
+    .insight-list li::before {
+      content: "›";
+      position: absolute; left: 0;
+      color: var(--accent); font-weight: 700;
+    }
+    .insight-list li strong { color: var(--text); font-weight:700; }
+
+    /* Group legend */
+    .group-legend { display:flex; gap:.6rem; flex-wrap:wrap; margin-top:.5rem; }
+    .gl-item { display:flex; align-items:center; gap:.35rem; font-size:.78rem; }
+    .gl-dot { width:10px; height:10px; border-radius:50%; }
+  </style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav>
+  <div class="container nav-inner">
+    <a class="nav-brand" href="index.html" style="text-decoration:none">
+      ← CFT <span class="badge">explore</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#cft">CFT</a></li>
+      <li><a href="#gft">GFT</a></li>
+      <li><a href="#tst">TST</a></li>
+      <li><a href="#compare">Compare</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="viz-hero">
+  <div class="container">
+    <p class="eyebrow" style="font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#58a6ff;margin-bottom:.75rem;">
+      ◈ Interactive Theory Explanations
+    </p>
+    <h1>How do groups form? It depends which theory you ask.</h1>
+    <p>
+      Three interactive visualizations - one shared dataset - showing how CFT,
+      GFT, and TST each produce a different answer to the same question.
+      <br><br>
+      <strong style="color:#e6edf3">9 agents · 3 true clusters · infinite interpretations.</strong>
+    </p>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     INTERACTIVE 1 - CFT THRESHOLD
+══════════════════════════════════════════════════════════════ -->
+<section class="viz-section" id="cft">
+  <div class="container">
+    <div class="section-header" style="margin-bottom:2rem">
+      <p class="section-label">Theory 1</p>
+      <h2>CFT - The Threshold</h2>
+      <p>
+        In Consensus-Fracture Theory, a group forms only when
+        <em>every</em> pairwise affinity in the group exceeds θ.
+        One weak link breaks the group.
+      </p>
+    </div>
+
+    <div class="viz-layout">
+      <div class="canvas-wrap">
+        <div class="canvas-label">CFT • drag threshold to form groups</div>
+        <canvas id="cft-canvas" width="500" height="370"></canvas>
+      </div>
+
+      <div class="controls">
+        <span class="theory-badge" style="background:#eff6ff;color:#2563eb">CFT</span>
+
+        <div class="ctrl-group">
+          <div class="ctrl-label">
+            Threshold θ
+            <span class="ctrl-val" id="cft-theta-val">0.70</span>
+          </div>
+          <input type="range" id="cft-theta" min="0.05" max="0.95" step="0.01" value="0.70" />
+        </div>
+
+        <div class="stat-box" id="cft-stats">
+          <div class="lbl">Current groups</div>
+          <strong id="cft-group-list">Loading…</strong>
+        </div>
+
+        <div class="callout" id="cft-callout">
+          Drag the slider to see groups form and dissolve.
+        </div>
+
+        <ul class="insight-list">
+          <li><strong>θ ≈ 0.85+</strong> - all singletons; even tight pairs don't qualify</li>
+          <li><strong>θ ≈ 0.72</strong> - cluster A forms (its weakest link is A₁–A₃ = 0.72)</li>
+          <li><strong>θ ≈ 0.65</strong> - all three clusters fully formed</li>
+          <li><strong>θ &lt; 0.15</strong> - cross-cluster links activate; large merged groups</li>
+        </ul>
+
+        <div class="callout" style="border-color:#f59e0b;background:#fffbeb;color:#92400e;margin-top:.5rem;">
+          <strong>Key insight:</strong> A group requires ALL pairwise affinities ≥ θ.
+          The "weakest link" determines when the full cluster forms.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     INTERACTIVE 2 - GFT GRADIENT
+══════════════════════════════════════════════════════════════ -->
+<section class="viz-section dark" id="gft">
+  <div class="container">
+    <div class="section-header" style="margin-bottom:2rem">
+      <p class="section-label">Theory 2</p>
+      <h2>GFT - Agents in Motion</h2>
+      <p>
+        In Gradient Field Theory, agents don't jump into groups -
+        they drift continuously toward affinity partners. Groups emerge from
+        the final resting positions.
+      </p>
+    </div>
+
+    <div class="viz-layout">
+      <div class="canvas-wrap">
+        <div class="canvas-label">GFT • spring simulation</div>
+        <canvas id="gft-canvas" width="500" height="370"></canvas>
+      </div>
+
+      <div class="controls">
+        <span class="theory-badge" style="background:#f0fdf4;color:#16a34a">GFT</span>
+
+        <div class="btn-row">
+          <button class="btn-sm primary" id="gft-play">▶ Play</button>
+          <button class="btn-sm" id="gft-reset">↺ Reset</button>
+          <button class="btn-sm" id="gft-step">Step ×10</button>
+        </div>
+
+        <div class="ctrl-group">
+          <div class="ctrl-label">
+            Spring constant k
+            <span class="ctrl-val" id="gft-k-val">0.04</span>
+          </div>
+          <input type="range" id="gft-k" min="0.01" max="0.12" step="0.005" value="0.04" />
+        </div>
+
+        <div class="stat-box">
+          <div class="lbl">Simulation step</div>
+          <strong id="gft-step-count">0</strong>
+          <div class="lbl" style="margin-top:.4rem;">Status</div>
+          <strong id="gft-status">Idle - press Play</strong>
+        </div>
+
+        <div class="callout" style="border-color:#16a34a;background:#f0fdf4;color:#14532d;">
+          <strong>What's happening:</strong> Each pair has a target separation distance
+          inversely proportional to their affinity.
+          High-affinity pairs are "pulled together"; low-affinity pairs drift apart.
+        </div>
+
+        <ul class="insight-list">
+          <li><strong>Unlike CFT</strong>, groups emerge from position, not a threshold</li>
+          <li><strong>Overlapping membership</strong> is possible (two clusters may merge)</li>
+          <li>Higher k → <strong>tighter, faster</strong> clustering</li>
+          <li>The trajectory matters, not just the final state</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     INTERACTIVE 3 - TST TEMPERATURE
+══════════════════════════════════════════════════════════════ -->
+<section class="viz-section" id="tst">
+  <div class="container">
+    <div class="section-header" style="margin-bottom:2rem">
+      <p class="section-label">Theory 3</p>
+      <h2>TST - Hot and Cold</h2>
+      <p>
+        In Thermodynamic Social Theory, groups are Potts-model spin assignments.
+        High temperature → random, fluid groups. Low temperature → stable, frozen clusters.
+        Watch the phase transition.
+      </p>
+    </div>
+
+    <div class="viz-layout">
+      <div>
+        <div class="canvas-wrap" style="margin-bottom:1.25rem">
+          <div class="canvas-label">TST • Potts model (Metropolis-Hastings)</div>
+          <canvas id="tst-canvas" width="500" height="290"></canvas>
+        </div>
+        <div class="canvas-wrap">
+          <div class="canvas-label">phase diagram - groups vs temperature</div>
+          <canvas id="tst-phase" width="500" height="110"></canvas>
+        </div>
+      </div>
+
+      <div class="controls">
+        <span class="theory-badge" style="background:#fef2f2;color:#dc2626">TST</span>
+
+        <div class="ctrl-group">
+          <div class="ctrl-label">
+            Temperature T
+            <span class="ctrl-val" id="tst-temp-val">1.50</span>
+          </div>
+          <input type="range" id="tst-temp" min="0.1" max="5.0" step="0.05" value="1.5" />
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-sm primary" id="tst-run">▶ Run sweeps</button>
+          <button class="btn-sm" id="tst-reset">↺ Reset spins</button>
+        </div>
+
+        <div class="stat-box">
+          <div class="lbl">Current groups</div>
+          <strong id="tst-group-list">-</strong>
+          <div class="lbl" style="margin-top:.4rem;">Sweeps run</div>
+          <strong id="tst-sweep-count">0</strong>
+        </div>
+
+        <div class="callout" style="border-color:#dc2626;background:#fef2f2;color:#991b1b;">
+          <strong>Phase transition</strong> occurs near T ≈ 1.5.
+          Below it: stable clusters form reliably.
+          Above it: assignments fluctuate and groups blur.
+        </div>
+
+        <ul class="insight-list">
+          <li><strong>T → 0</strong>: frozen - energy-minimizing group assignment</li>
+          <li><strong>T → ∞</strong>: random - all spin assignments equally probable</li>
+          <li>Near the transition: <strong>power-law group size distributions</strong></li>
+          <li>Same data as CFT/GFT - completely different mechanism</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     COMPARE SIDE-BY-SIDE
+══════════════════════════════════════════════════════════════ -->
+<section class="viz-section dark" id="compare">
+  <div class="container">
+    <div class="section-header" style="margin-bottom:2rem">
+      <p class="section-label">Side by Side</p>
+      <h2>Same data. Three answers.</h2>
+      <p>
+        CFT, GFT, and TST each partition the same 9 agents.
+        When they agree, we have confidence. When they disagree,
+        the data is genuinely ambiguous.
+      </p>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;">
+      <div>
+        <div style="font-size:.75rem;font-weight:700;color:#2563eb;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem;">CFT (θ = current)</div>
+        <div class="canvas-wrap">
+          <canvas id="cmp-cft" width="320" height="240"></canvas>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:.75rem;font-weight:700;color:#16a34a;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem;">GFT (final positions)</div>
+        <div class="canvas-wrap">
+          <canvas id="cmp-gft" width="320" height="240"></canvas>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:.75rem;font-weight:700;color:#dc2626;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem;">TST (current T)</div>
+        <div class="canvas-wrap">
+          <canvas id="cmp-tst" width="320" height="240"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:1.5rem;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1.25rem;">
+      <div style="font-size:.78rem;font-weight:700;margin-bottom:.5rem;">Cross-Theory Agreement Index (CTAI)</div>
+      <div style="font-size:.82rem;color:var(--muted);margin-bottom:.75rem;">
+        Mean pairwise NMI between theory partitions. 1.0 = perfect agreement, 0 = no agreement.
+      </div>
+      <div style="font-size:1.4rem;font-weight:800;" id="ctai-display">-</div>
+      <div style="font-size:.75rem;color:var(--muted);margin-top:.25rem;" id="ctai-label"></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- Footer -->
+<footer>
+  <div class="container footer-inner">
+    <span>CFT · <a href="index.html">← Back to project</a></span>
+    <span>
+      <a href="https://github.com/rivirside/cft" target="_blank">GitHub</a> ·
+      <a href="https://github.com/rivirside/cft/blob/main/THEORIES.md" target="_blank">Theory docs</a>
+    </span>
+  </div>
+</footer>
+
+
+<script>
+// ══════════════════════════════════════════════════════════════════════
+// SHARED DATA
+// ══════════════════════════════════════════════════════════════════════
+
+const N = 9;
+const LABELS = ['A₁','A₂','A₃','B₁','B₂','B₃','C₁','C₂','C₃'];
+
+// Affinity matrix - symmetric, values in [0,1]
+// Three natural clusters (A=0-2, B=3-5, C=6-8) with low cross-cluster affinity
+const AFF = [
+  [1.00, 0.88, 0.72, 0.12, 0.08, 0.15, 0.10, 0.05, 0.08],
+  [0.88, 1.00, 0.80, 0.10, 0.12, 0.08, 0.05, 0.12, 0.06],
+  [0.72, 0.80, 1.00, 0.15, 0.10, 0.12, 0.08, 0.06, 0.10],
+  [0.12, 0.10, 0.15, 1.00, 0.82, 0.65, 0.08, 0.12, 0.05],
+  [0.08, 0.12, 0.10, 0.82, 1.00, 0.78, 0.12, 0.08, 0.10],
+  [0.15, 0.08, 0.12, 0.65, 0.78, 1.00, 0.06, 0.10, 0.08],
+  [0.10, 0.05, 0.08, 0.08, 0.12, 0.06, 1.00, 0.75, 0.70],
+  [0.05, 0.12, 0.06, 0.12, 0.08, 0.10, 0.75, 1.00, 0.83],
+  [0.08, 0.06, 0.10, 0.05, 0.10, 0.08, 0.70, 0.83, 1.00],
+];
+
+// Fixed positions for CFT / TST (three-cluster layout)
+const FIXED_POS = [
+  {x:148,y:90},  {x:92,y:158},  {x:192,y:162},  // A cluster
+  {x:345,y:90},  {x:285,y:158}, {x:388,y:162},   // B cluster
+  {x:200,y:276}, {x:260,y:326}, {x:152,y:326},   // C cluster
+];
+
+const GRP_COLORS = ['#3b82f6','#22c55e','#f59e0b','#ec4899','#8b5cf6','#14b8a6'];
+
+// ══════════════════════════════════════════════════════════════════════
+// ALGORITHMS
+// ══════════════════════════════════════════════════════════════════════
+
+// CFT: greedy clique cover
+function cft_groups(threshold) {
+  const assigned = new Array(N).fill(false);
+  const groups = [];
+  for (let i = 0; i < N; i++) {
+    if (assigned[i]) continue;
+    const g = [i];
+    for (let j = i + 1; j < N; j++) {
+      if (!assigned[j] && g.every(k => AFF[k][j] >= threshold)) g.push(j);
+    }
+    groups.push(g);
+    g.forEach(k => assigned[k] = true);
+  }
+  return groups;
+}
+
+// TST: Potts model state
+let tst_spins = Array.from({length: N}, (_, i) => i % 3);
+let tst_sweeps = 0;
+
+function tst_reset() {
+  tst_spins = Array.from({length: N}, (_, i) => i % 3);
+  tst_sweeps = 0;
+}
+
+function tst_step(temperature, n_sweeps = 20) {
+  for (let sw = 0; sw < n_sweeps; sw++) {
+    for (let i = 0; i < N; i++) {
+      const oldS = tst_spins[i];
+      const newS = Math.floor(Math.random() * 3);
+      if (newS === oldS) continue;
+      let dE = 0;
+      for (let j = 0; j < N; j++) {
+        if (j === i) continue;
+        if (tst_spins[j] === oldS) dE += AFF[i][j];
+        if (tst_spins[j] === newS) dE -= AFF[i][j];
+      }
+      if (dE <= 0 || Math.random() < Math.exp(-dE / temperature)) {
+        tst_spins[i] = newS;
+      }
+    }
+  }
+  tst_sweeps += n_sweeps;
+}
+
+function tst_groups() {
+  const map = {};
+  tst_spins.forEach((s, i) => { if (!map[s]) map[s] = []; map[s].push(i); });
+  return Object.values(map).filter(g => g.length > 0);
+}
+
+// GFT: spring simulation
+let gft_pos = [];
+let gft_steps = 0;
+let gft_k = 0.04;
+let gft_anim = null;
+let gft_running = false;
+
+function gft_reset() {
+  gft_pos = Array.from({length: N}, () => ({
+    x: 55 + Math.random() * 390,
+    y: 40 + Math.random() * 290,
+  }));
+  gft_steps = 0;
+  gft_running = false;
+  if (gft_anim) { cancelAnimationFrame(gft_anim); gft_anim = null; }
+}
+
+function gft_step_once() {
+  const forces = Array.from({length: N}, () => ({x: 0, y: 0}));
+  for (let i = 0; i < N; i++) {
+    // Soft center gravity
+    forces[i].x += (250 - gft_pos[i].x) * 0.003;
+    forces[i].y += (185 - gft_pos[i].y) * 0.003;
+    for (let j = i + 1; j < N; j++) {
+      const dx = gft_pos[j].x - gft_pos[i].x;
+      const dy = gft_pos[j].y - gft_pos[i].y;
+      const dist = Math.sqrt(dx * dx + dy * dy) + 0.5;
+      // Target separation inversely proportional to affinity
+      const target = 30 + 200 * (1 - AFF[i][j]);
+      const spring = gft_k * (dist - target) / dist;
+      forces[i].x += spring * dx;
+      forces[i].y += spring * dy;
+      forces[j].x -= spring * dx;
+      forces[j].y -= spring * dy;
+    }
+  }
+  gft_pos = gft_pos.map((p, i) => ({
+    x: Math.max(28, Math.min(472, p.x + forces[i].x)),
+    y: Math.max(28, Math.min(342, p.y + forces[i].y)),
+  }));
+  gft_steps++;
+}
+
+// K-means-style GFT group detection (3 clusters from positions)
+function gft_groups_from_pos() {
+  // Simple: use 3 cluster seeds and assign each agent to nearest
+  // Seeds: centroid of known true clusters (close to expected final positions)
+  const pos = gft_pos;
+  if (gft_steps < 5) {
+    return [[0,1,2],[3,4,5],[6,7,8]]; // placeholder
+  }
+  // Run k-means with k=3
+  let centers = [0,3,6].map(i => ({x: pos[i].x, y: pos[i].y}));
+  for (let iter = 0; iter < 10; iter++) {
+    const assigns = pos.map(p => {
+      let best = 0, bestD = Infinity;
+      centers.forEach((c, ci) => {
+        const d = (p.x-c.x)**2 + (p.y-c.y)**2;
+        if (d < bestD) { bestD = d; best = ci; }
+      });
+      return best;
+    });
+    centers = centers.map((_, ci) => {
+      const members = pos.filter((_, i) => assigns[i] === ci);
+      if (members.length === 0) return centers[ci];
+      return {
+        x: members.reduce((s,p) => s + p.x, 0) / members.length,
+        y: members.reduce((s,p) => s + p.y, 0) / members.length,
+      };
+    });
+    const groups = [0,1,2].map(ci => pos.map((_,i) => i).filter(i => assigns[i] === ci));
+    // Check if any cluster is empty, bail if so
+    if (groups.some(g => g.length === 0)) continue;
+  }
+  const finalAssigns = pos.map(p => {
+    let best = 0, bestD = Infinity;
+    centers.forEach((c, ci) => {
+      const d = (p.x-c.x)**2 + (p.y-c.y)**2;
+      if (d < bestD) { bestD = d; best = ci; }
+    });
+    return best;
+  });
+  const groups = [0,1,2].map(ci => finalAssigns.map((_,i)=>i).filter(i=>finalAssigns[i]===ci));
+  return groups.filter(g => g.length > 0);
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// NMI HELPER (for CTAI computation)
+// ══════════════════════════════════════════════════════════════════════
+
+function groups_to_labels(groups) {
+  const labels = new Array(N).fill(-1);
+  groups.forEach((g, gi) => g.forEach(i => labels[i] = gi));
+  return labels;
+}
+
+function nmi(g1, g2) {
+  const l1 = groups_to_labels(g1);
+  const l2 = groups_to_labels(g2);
+  const n = N;
+  const k1 = Math.max(...l1) + 1;
+  const k2 = Math.max(...l2) + 1;
+  const cont = Array.from({length:k1}, () => new Array(k2).fill(0));
+  l1.forEach((a, i) => cont[a][l2[i]]++);
+  let mi = 0;
+  for (let a = 0; a < k1; a++) {
+    for (let b = 0; b < k2; b++) {
+      if (cont[a][b] === 0) continue;
+      const na = cont[a].reduce((s,x)=>s+x,0);
+      const nb = cont.reduce((s,row)=>s+row[b],0);
+      mi += (cont[a][b]/n) * Math.log((n * cont[a][b]) / (na * nb));
+    }
+  }
+  const h1 = -[...Array(k1)].map((_,a)=>cont[a].reduce((s,x)=>s+x,0)/n).filter(p=>p>0).reduce((s,p)=>s+p*Math.log(p),0);
+  const h2 = -[...Array(k2)].map((_,b)=>cont.reduce((s,row)=>s+row[b]/n,0)).filter(p=>p>0).reduce((s,p)=>s+p*Math.log(p),0);
+  if (h1 + h2 === 0) return 1;
+  return 2 * mi / (h1 + h2);
+}
+
+function ctai(groups_list) {
+  if (groups_list.length < 2) return 1;
+  const pairs = [];
+  for (let i = 0; i < groups_list.length; i++)
+    for (let j = i+1; j < groups_list.length; j++)
+      pairs.push(nmi(groups_list[i], groups_list[j]));
+  return pairs.reduce((s,x)=>s+x,0) / pairs.length;
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// DRAWING
+// ══════════════════════════════════════════════════════════════════════
+
+function hexToRgb(hex) {
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  return {r,g,b};
+}
+
+function drawScene(ctx, positions, groups, options = {}) {
+  const {
+    width = ctx.canvas.width,
+    height = ctx.canvas.height,
+    threshold = null,
+    showEdges = true,
+    scale = 1,
+  } = options;
+
+  ctx.clearRect(0, 0, width, height);
+
+  // Background
+  ctx.fillStyle = '#f8fafc';
+  ctx.fillRect(0, 0, width, height);
+
+  // Assign group index
+  const groupOf = new Array(N).fill(-1);
+  groups.forEach((g, gi) => g.forEach(i => groupOf[i] = gi));
+
+  // Draw group hulls (convex hull + padding)
+  groups.forEach((g, gi) => {
+    if (g.length < 2) return;
+    const color = GRP_COLORS[gi % GRP_COLORS.length];
+    const pts = g.map(i => positions[i]);
+    const hull = convexHull(pts);
+    const cx = hull.reduce((s,p)=>s+p.x,0)/hull.length;
+    const cy = hull.reduce((s,p)=>s+p.y,0)/hull.length;
+    const expanded = hull.map(p => ({
+      x: cx + (p.x - cx) * 1.35 + Math.sign(p.x - cx) * 10,
+      y: cy + (p.y - cy) * 1.35 + Math.sign(p.y - cy) * 10,
+    }));
+    const rgb = hexToRgb(color);
+    ctx.beginPath();
+    if (expanded.length === 1) {
+      ctx.arc(expanded[0].x, expanded[0].y, 30, 0, 2*Math.PI);
+    } else {
+      ctx.moveTo(expanded[0].x, expanded[0].y);
+      expanded.forEach(p => ctx.lineTo(p.x, p.y));
+    }
+    ctx.closePath();
+    ctx.fillStyle = `rgba(${rgb.r},${rgb.g},${rgb.b},0.10)`;
+    ctx.fill();
+    ctx.strokeStyle = `rgba(${rgb.r},${rgb.g},${rgb.b},0.40)`;
+    ctx.lineWidth = 1.5 * scale;
+    ctx.setLineDash([5,4]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  });
+
+  // Draw edges
+  if (showEdges) {
+    for (let i = 0; i < N; i++) {
+      for (let j = i + 1; j < N; j++) {
+        const aff = AFF[i][j];
+        if (aff < 0.05) continue;
+        const qualified = threshold !== null && aff >= threshold;
+        const sameGroup = groupOf[i] !== -1 && groupOf[i] === groupOf[j] && groups[groupOf[i]].length > 1;
+        const alpha = sameGroup ? 0.7 : Math.min(0.25, aff * 1.5);
+        const lw = sameGroup ? 2.0 * scale : Math.min(1.2, aff * 2) * scale;
+        const color = sameGroup
+          ? GRP_COLORS[groupOf[i] % GRP_COLORS.length]
+          : '#94a3b8';
+        ctx.beginPath();
+        ctx.moveTo(positions[i].x, positions[i].y);
+        ctx.lineTo(positions[j].x, positions[j].y);
+        const rgb = hexToRgb(color[0] === '#' ? color : '#94a3b8');
+        ctx.strokeStyle = color[0] === '#'
+          ? `rgba(${rgb.r},${rgb.g},${rgb.b},${alpha})`
+          : `rgba(148,163,184,${alpha})`;
+        ctx.lineWidth = lw;
+        ctx.stroke();
+      }
+    }
+  }
+
+  // Draw nodes
+  for (let i = 0; i < N; i++) {
+    const gi = groupOf[i];
+    const inGroup = gi >= 0 && groups[gi].length > 1;
+    const color = inGroup ? GRP_COLORS[gi % GRP_COLORS.length] : '#94a3b8';
+    const r = hexToRgb(color);
+    const p = positions[i];
+
+    // Outer glow
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 20 * scale, 0, 2*Math.PI);
+    ctx.fillStyle = `rgba(${r.r},${r.g},${r.b},0.12)`;
+    ctx.fill();
+
+    // Main circle
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 15 * scale, 0, 2*Math.PI);
+    ctx.fillStyle = inGroup ? `rgba(${r.r},${r.g},${r.b},0.18)` : '#f1f5f9';
+    ctx.fill();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2 * scale;
+    ctx.stroke();
+
+    // Label
+    ctx.fillStyle = '#1e293b';
+    ctx.font = `bold ${Math.round(10 * scale)}px "SF Mono", monospace`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(LABELS[i], p.x, p.y);
+  }
+}
+
+// Gift-wrapping convex hull
+function convexHull(points) {
+  if (points.length <= 2) return points.slice();
+  let start = points.reduce((a,b) => b.x < a.x ? b : a);
+  const hull = [];
+  let cur = start;
+  do {
+    hull.push(cur);
+    let nxt = points[0];
+    for (const p of points) {
+      if (p === cur) continue;
+      const cross = (nxt.x-cur.x)*(p.y-cur.y) - (nxt.y-cur.y)*(p.x-cur.x);
+      if (nxt === cur || cross < 0) nxt = p;
+    }
+    cur = nxt;
+  } while (cur !== start && hull.length < points.length + 1);
+  return hull;
+}
+
+function groupsLabel(groups) {
+  return groups
+    .filter(g => g.length > 1)
+    .map((g, i) => `{${g.map(j=>LABELS[j]).join(', ')}}`)
+    .join('  ') || 'all singletons';
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// INTERACTIVE 1: CFT
+// ══════════════════════════════════════════════════════════════════════
+
+const cftCanvas = document.getElementById('cft-canvas');
+const cftCtx = cftCanvas.getContext('2d');
+const cftSlider = document.getElementById('cft-theta');
+const cftThetaVal = document.getElementById('cft-theta-val');
+const cftGroupList = document.getElementById('cft-group-list');
+const cftCallout = document.getElementById('cft-callout');
+
+function renderCFT() {
+  const theta = parseFloat(cftSlider.value);
+  cftThetaVal.textContent = theta.toFixed(2);
+  const groups = cft_groups(theta);
+  const nGroups = groups.length;
+  const nonSingle = groups.filter(g=>g.length>1).length;
+  cftGroupList.textContent = groupsLabel(groups);
+
+  // Dynamic callout
+  if (theta >= 0.85) {
+    cftCallout.textContent = '🔴 All singletons - threshold too high for any pair to qualify.';
+    cftCallout.style.borderColor = '#dc2626';
+    cftCallout.style.background = '#fef2f2';
+    cftCallout.style.color = '#991b1b';
+  } else if (theta >= 0.72) {
+    cftCallout.textContent = '🟡 Some pairs form, but weakest links prevent full clusters. A₁–A₃ = 0.72 is the bottleneck for cluster A.';
+    cftCallout.style.borderColor = '#f59e0b';
+    cftCallout.style.background = '#fffbeb';
+    cftCallout.style.color = '#92400e';
+  } else if (theta >= 0.65) {
+    cftCallout.textContent = '🟢 Clusters A and C formed. B still incomplete - weakest link B₁–B₃ = 0.65 not yet below θ.';
+    cftCallout.style.borderColor = '#16a34a';
+    cftCallout.style.background = '#f0fdf4';
+    cftCallout.style.color = '#14532d';
+  } else if (theta >= 0.15) {
+    cftCallout.textContent = '✅ All three clusters fully formed. Cross-cluster links (≈ 0.05–0.15) still below threshold.';
+    cftCallout.style.borderColor = '#2563eb';
+    cftCallout.style.background = '#eff6ff';
+    cftCallout.style.color = '#1e3a8a';
+  } else {
+    cftCallout.textContent = '⚠️ Cross-cluster affinities now qualify - clusters merging into larger groups.';
+    cftCallout.style.borderColor = '#7c3aed';
+    cftCallout.style.background = '#f5f3ff';
+    cftCallout.style.color = '#4c1d95';
+  }
+
+  drawScene(cftCtx, FIXED_POS, groups, { threshold: theta, width: 500, height: 370 });
+  renderCompare();
+}
+
+cftSlider.addEventListener('input', renderCFT);
+
+// ══════════════════════════════════════════════════════════════════════
+// INTERACTIVE 2: GFT
+// ══════════════════════════════════════════════════════════════════════
+
+const gftCanvas = document.getElementById('gft-canvas');
+const gftCtx = gftCanvas.getContext('2d');
+const gftPlayBtn = document.getElementById('gft-play');
+const gftResetBtn = document.getElementById('gft-reset');
+const gftStepBtn = document.getElementById('gft-step');
+const gftKSlider = document.getElementById('gft-k');
+const gftKVal = document.getElementById('gft-k-val');
+const gftStepCount = document.getElementById('gft-step-count');
+const gftStatus = document.getElementById('gft-status');
+
+function renderGFT() {
+  const groups = gft_groups_from_pos();
+  drawScene(gftCtx, gft_pos, groups, {
+    width: 500, height: 370, showEdges: false
+  });
+  // Draw spring lines
+  for (let i = 0; i < N; i++) {
+    for (let j = i+1; j < N; j++) {
+      if (AFF[i][j] < 0.25) continue;
+      const alpha = Math.min(0.55, AFF[i][j] * 0.7);
+      gftCtx.beginPath();
+      gftCtx.moveTo(gft_pos[i].x, gft_pos[i].y);
+      gftCtx.lineTo(gft_pos[j].x, gft_pos[j].y);
+      gftCtx.strokeStyle = `rgba(34,197,94,${alpha})`;
+      gftCtx.lineWidth = AFF[i][j] * 2;
+      gftCtx.stroke();
+    }
+  }
+  // Redraw nodes on top
+  for (let i = 0; i < N; i++) {
+    const p = gft_pos[i];
+    const groups2 = gft_groups_from_pos();
+    const gi = groups2.findIndex(g => g.includes(i));
+    const color = gi >= 0 ? GRP_COLORS[gi % GRP_COLORS.length] : '#94a3b8';
+    const r = hexToRgb(color);
+    ctx_dot(gftCtx, p.x, p.y, LABELS[i], color);
+  }
+  gftStepCount.textContent = gft_steps;
+  renderCompare();
+}
+
+function ctx_dot(ctx, x, y, label, color) {
+  const r = hexToRgb(color);
+  ctx.beginPath();
+  ctx.arc(x, y, 16, 0, 2*Math.PI);
+  ctx.fillStyle = `rgba(${r.r},${r.g},${r.b},0.18)`;
+  ctx.fill();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  ctx.fillStyle = '#1e293b';
+  ctx.font = 'bold 10px "SF Mono", monospace';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(label, x, y);
+}
+
+gftPlayBtn.addEventListener('click', () => {
+  if (gft_running) {
+    gft_running = false;
+    cancelAnimationFrame(gft_anim);
+    gftPlayBtn.textContent = '▶ Play';
+    gftStatus.textContent = `Paused at step ${gft_steps}`;
+  } else {
+    gft_running = true;
+    gftPlayBtn.textContent = '⏸ Pause';
+    gftStatus.textContent = 'Running…';
+    (function loop() {
+      if (!gft_running) return;
+      for (let i = 0; i < 4; i++) gft_step_once();
+      renderGFT();
+      if (gft_steps < 400) {
+        gft_anim = requestAnimationFrame(loop);
+      } else {
+        gft_running = false;
+        gftPlayBtn.textContent = '▶ Play';
+        gftStatus.textContent = `Converged at step ${gft_steps}`;
+      }
+    })();
+  }
+});
+
+gftResetBtn.addEventListener('click', () => {
+  gft_running = false;
+  if (gft_anim) cancelAnimationFrame(gft_anim);
+  gftPlayBtn.textContent = '▶ Play';
+  gft_k = parseFloat(gftKSlider.value);
+  gft_reset();
+  gftStatus.textContent = 'Reset - press Play';
+  renderGFT();
+});
+
+gftStepBtn.addEventListener('click', () => {
+  for (let i = 0; i < 10; i++) gft_step_once();
+  gftStatus.textContent = `Step ${gft_steps}`;
+  renderGFT();
+});
+
+gftKSlider.addEventListener('input', () => {
+  gft_k = parseFloat(gftKSlider.value);
+  gftKVal.textContent = gft_k.toFixed(3);
+});
+
+// ══════════════════════════════════════════════════════════════════════
+// INTERACTIVE 3: TST
+// ══════════════════════════════════════════════════════════════════════
+
+const tstCanvas = document.getElementById('tst-canvas');
+const tstCtx = tstCanvas.getContext('2d');
+const tstPhaseCanvas = document.getElementById('tst-phase');
+const tstPhaseCtx = tstPhaseCanvas.getContext('2d');
+const tstTempSlider = document.getElementById('tst-temp');
+const tstTempVal = document.getElementById('tst-temp-val');
+const tstGroupList = document.getElementById('tst-group-list');
+const tstSweepCount = document.getElementById('tst-sweep-count');
+let tst_anim = null;
+
+function renderTST() {
+  const temp = parseFloat(tstTempSlider.value);
+  tstTempVal.textContent = temp.toFixed(2);
+  const groups = tst_groups();
+  tstGroupList.textContent = groupsLabel(groups);
+  tstSweepCount.textContent = tst_sweeps;
+
+  // Draw on smaller canvas (height 290)
+  tstCtx.clearRect(0,0,500,290);
+  tstCtx.fillStyle = '#f8fafc';
+  tstCtx.fillRect(0,0,500,290);
+
+  // Scale positions to fit
+  const scale = 290/370;
+  const scaledPos = FIXED_POS.map(p => ({x: p.x, y: p.y * scale}));
+  drawScene(tstCtx, scaledPos, groups, {width:500, height:290, scale});
+  renderCompare();
+}
+
+// Pre-compute phase diagram
+const PHASE_TEMPS = [];
+const PHASE_NGROUPS = [];
+(function precomputePhase() {
+  for (let t = 0.1; t <= 5.0; t += 0.1) {
+    PHASE_TEMPS.push(parseFloat(t.toFixed(1)));
+    // Run multiple seeds and average
+    let total = 0;
+    for (let seed = 0; seed < 5; seed++) {
+      tst_reset();
+      tst_step(t, 80);
+      total += tst_groups().length;
+    }
+    PHASE_NGROUPS.push(total / 5);
+  }
+  tst_reset(); // restore
+})();
+
+function renderPhaseDiagram() {
+  const ctx = tstPhaseCtx;
+  const W = 500, H = 110;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle = '#f8fafc';
+  ctx.fillRect(0,0,W,H);
+
+  const pad = {l:40, r:20, t:12, b:28};
+  const iw = W - pad.l - pad.r;
+  const ih = H - pad.t - pad.b;
+
+  // Grid
+  ctx.strokeStyle = '#e2e8f0';
+  ctx.lineWidth = 1;
+  [1,2,3].forEach(y => {
+    const py = pad.t + ih - (y/3) * ih;
+    ctx.beginPath(); ctx.moveTo(pad.l, py); ctx.lineTo(pad.l+iw, py); ctx.stroke();
+  });
+
+  // Axes
+  ctx.strokeStyle = '#94a3b8';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(pad.l, pad.t); ctx.lineTo(pad.l, pad.t+ih);
+  ctx.lineTo(pad.l+iw, pad.t+ih); ctx.stroke();
+
+  // Axis labels
+  ctx.fillStyle = '#6b7280'; ctx.font = '10px sans-serif'; ctx.textAlign = 'right';
+  ctx.fillText('T', pad.l + iw + 14, pad.t + ih + 4);
+  ctx.textAlign = 'center';
+  [0,1,2,3,4,5].forEach(t => {
+    const x = pad.l + (t/5) * iw;
+    ctx.fillText(t, x, pad.t+ih+14);
+  });
+  ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+  [1,2,3].forEach(n => {
+    const y = pad.t + ih - (n/3)*ih;
+    ctx.fillText(n, pad.l-5, y);
+  });
+  ctx.textAlign = 'left'; ctx.fillText('groups', pad.l+4, pad.t+8); ctx.textAlign = 'center';
+
+  // Line
+  ctx.beginPath();
+  PHASE_TEMPS.forEach((t,i) => {
+    const x = pad.l + (t/5)*iw;
+    const y = pad.t + ih - (PHASE_NGROUPS[i]/3)*ih;
+    i === 0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+  });
+  ctx.strokeStyle = '#dc2626'; ctx.lineWidth = 2; ctx.stroke();
+
+  // Current temp indicator
+  const curT = parseFloat(tstTempSlider.value);
+  const curX = pad.l + (curT/5)*iw;
+  ctx.beginPath();
+  ctx.moveTo(curX, pad.t); ctx.lineTo(curX, pad.t+ih);
+  ctx.strokeStyle = '#2563eb'; ctx.lineWidth = 1.5;
+  ctx.setLineDash([3,3]); ctx.stroke(); ctx.setLineDash([]);
+
+  // Phase transition annotation
+  const tcX = pad.l + (1.5/5)*iw;
+  ctx.fillStyle = '#d97706'; ctx.font = 'bold 9px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('Tᶜ ≈ 1.5', tcX, pad.t + 10);
+}
+
+tstTempSlider.addEventListener('input', () => {
+  const temp = parseFloat(tstTempSlider.value);
+  tst_step(temp, 50);
+  renderTST();
+  renderPhaseDiagram();
+});
+
+document.getElementById('tst-run').addEventListener('click', () => {
+  const temp = parseFloat(tstTempSlider.value);
+  tst_step(temp, 100);
+  renderTST();
+  renderPhaseDiagram();
+});
+
+document.getElementById('tst-reset').addEventListener('click', () => {
+  tst_reset();
+  renderTST();
+  renderPhaseDiagram();
+});
+
+// ══════════════════════════════════════════════════════════════════════
+// COMPARE PANEL
+// ══════════════════════════════════════════════════════════════════════
+
+const cmpCftCtx = document.getElementById('cmp-cft').getContext('2d');
+const cmpGftCtx = document.getElementById('cmp-gft').getContext('2d');
+const cmpTstCtx = document.getElementById('cmp-tst').getContext('2d');
+const ctaiDisplay = document.getElementById('ctai-display');
+const ctaiLabel = document.getElementById('ctai-label');
+
+function miniDraw(ctx, positions, groups) {
+  const S = 0.54;
+  const scaledPos = positions.map(p => ({x:p.x*S + 5, y:p.y*S + 5}));
+  drawScene(ctx, scaledPos, groups, {width:320, height:240, showEdges:false, scale:S});
+}
+
+function renderCompare() {
+  const theta = parseFloat(cftSlider.value);
+  const cGroups = cft_groups(theta);
+  const gGroups = gft_groups_from_pos();
+  const tGroups = tst_groups();
+
+  miniDraw(cmpCftCtx, FIXED_POS, cGroups);
+  miniDraw(cmpGftCtx, FIXED_POS, gGroups);
+  miniDraw(cmpTstCtx, FIXED_POS, tGroups);
+
+  const score = ctai([cGroups, gGroups, tGroups]);
+  ctaiDisplay.textContent = score.toFixed(3);
+  if (score > 0.7) {
+    ctaiDisplay.style.color = '#16a34a';
+    ctaiLabel.textContent = 'High agreement - all three theories see the same clusters.';
+  } else if (score > 0.4) {
+    ctaiDisplay.style.color = '#d97706';
+    ctaiLabel.textContent = 'Moderate agreement - some structural consensus, but disagreements remain.';
+  } else {
+    ctaiDisplay.style.color = '#dc2626';
+    ctaiLabel.textContent = 'Low agreement - theories disagree on how to partition these agents.';
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════════════
+
+gft_reset();
+tst_reset();
+tst_step(1.5, 100);
+renderCFT();
+renderGFT();
+renderTST();
+renderPhaseDiagram();
+</script>
+</body>
+</html>

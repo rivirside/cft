@@ -108,6 +108,11 @@ temp/
 data/
 datasets/
 
+# But allow test fixtures
+!tests/fixtures/**/*.csv
+!tests/fixtures/**/*.json
+!tests/fixtures/**/*.jsonl
+
 # Log files
 *.log
 

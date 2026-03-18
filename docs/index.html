@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CFT - Multi-Theory Group Formation Framework</title>
+  <meta name="description" content="An open Python library testing five competing theories of how groups form, stabilize, and fracture - built in public." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ── Nav ──────────────────────────────────────────────────────────── -->
+<nav>
+  <div class="container nav-inner">
+    <span class="nav-brand">
+      CFT
+      <span class="badge">building in public</span>
+    </span>
+    <ul class="nav-links">
+      <li><a href="#theories">Theories</a></li>
+      <li><a href="#results">Results</a></li>
+      <li><a href="#methodology">Methodology</a></li>
+      <li><a href="#limitations">Limitations</a></li>
+      <li><a href="#devlog">Dev Log</a></li>
+      <li><a href="#install">Code</a></li>
+    </ul>
+    <a class="nav-github" href="https://github.com/rivirside/cft" target="_blank">
+      ↗ GitHub
+    </a>
+  </div>
+</nav>
+
+<!-- ── Hero ─────────────────────────────────────────────────────────── -->
+<section id="hero">
+  <div class="container">
+    <p class="eyebrow">◈ Open Research · Python Library</p>
+    <h1>Which theory best explains how <em>groups</em> form and fracture?</h1>
+    <p class="lead">
+      Five competing mathematical models. One synthetic social simulator.
+      Bayesian parameter inference. Real AI-agent simulation data.
+      All compared head-to-head - and all limitations documented openly.
+    </p>
+    <div class="hero-actions">
+      <a class="btn-primary" href="#theories">Explore the theories</a>
+      <a class="btn-ghost" href="#install">pip install -e .</a>
+    </div>
+
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-num">5</div>
+        <div class="stat-label">Theories</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">276</div>
+        <div class="stat-label">Passing tests</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">7</div>
+        <div class="stat-label">Known limitations</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">NMI 0.716</div>
+        <div class="stat-label">Best theory on MiroFish run</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── What is this ──────────────────────────────────────────────────── -->
+<section id="about">
+  <div class="container">
+    <div class="section-header">
+      <p class="section-label">The Project</p>
+      <h2>A framework for testing theories of collective behavior</h2>
+      <p>
+        Human groups form around shared interests, ideologies, and communication patterns -
+        but <em>which mechanism dominates?</em> CFT pits five formal theories against each
+        other on identical data, scores their predictions with information-theoretic metrics,
+        and exposes every methodological assumption openly.
+      </p>
+    </div>
+
+    <div class="scenario-grid">
+      <div class="scenario-card">
+        <div class="icon">⚗️</div>
+        <h4>Synthetic Scenarios</h4>
+        <p>Generate random, clustered, polarized, and hierarchical populations - all from numpy, no external dependencies.</p>
+      </div>
+      <div class="scenario-card">
+        <div class="icon">🤖</div>
+        <h4>AI-Agent Simulations</h4>
+        <p>Load data from MiroFish-Offline (OASIS format): LLM-backed agents with MBTI personalities on a synthetic social platform.</p>
+      </div>
+      <div class="scenario-card">
+        <div class="icon">📐</div>
+        <h4>Head-to-Head Scoring</h4>
+        <p>PAS, NMI, DFI, CTAI - quantitative metrics score each theory's ability to predict held-out community structure.</p>
+      </div>
+      <div class="scenario-card">
+        <div class="icon">🎲</div>
+        <h4>Bayesian Inference</h4>
+        <p>MCMC over interaction weights and theory parameters. Marginal likelihood ranks theories by evidence, not just fit.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Five Theories ─────────────────────────────────────────────────── -->
+<section id="theories">
+  <div class="container">
+    <div class="section-header">
+      <p class="section-label">The Theories</p>
+      <h2>Five mechanisms - one dataset</h2>
+      <p>
+        Each theory offers a different answer to <em>"why do people cluster?"</em>
+        All five are implemented with the same interface, scored against the same ground truth,
+        and given the same affinity data.
+      </p>
+    </div>
+
+    <div class="theories-grid">
+
+      <div class="theory-card" data-theory="CFT">
+        <span class="theory-tag">CFT</span>
+        <h3>Consensus-Fracture Theory</h3>
+        <p class="mechanism">Groups form when all pairwise affinities exceed a threshold θ - binary membership, no overlap.</p>
+        <ul class="prediction-list">
+          <li>Sharp, stable group boundaries</li>
+          <li>Fast convergence (&lt; 20 steps)</li>
+          <li>Rare but catastrophic splits</li>
+          <li>Best for ideological / coalition data</li>
+        </ul>
+        <div class="theory-params">
+          Key param: <code>threshold</code> ∈ [0.1, 0.99] &nbsp;·&nbsp;
+          Math: graph theory + combinatorics
+        </div>
+      </div>
+
+      <div class="theory-card" data-theory="GFT">
+        <span class="theory-tag">GFT</span>
+        <h3>Gradient Field Theory</h3>
+        <p class="mechanism">Individuals move in behavioral space following affinity gradients - continuous positions, smooth drift.</p>
+        <ul class="prediction-list">
+          <li>Gradual cluster formation</li>
+          <li>Overlapping memberships possible</li>
+          <li>Continuous reorganization</li>
+          <li>Multiple metastable states</li>
+        </ul>
+        <div class="theory-params">
+          Key params: <code>k</code>, <code>sigma</code> &nbsp;·&nbsp;
+          Math: ODEs, potential energy
+        </div>
+      </div>
+
+      <div class="theory-card" data-theory="QST">
+        <span class="theory-tag">QST</span>
+        <h3>Quantum Social Theory</h3>
+        <p class="mechanism">Individuals exist in superposition of behavioral states until "measured" through interaction.</p>
+        <ul class="prediction-list">
+          <li>Probabilistic group membership</li>
+          <li>Observation affects outcomes</li>
+          <li>Long-range entanglement correlations</li>
+          <li>Decoherence → classical at scale</li>
+        </ul>
+        <div class="theory-params">
+          Key param: <code>n_states</code> &nbsp;·&nbsp;
+          Math: mean-field quantum (O(n²))
+        </div>
+      </div>
+
+      <div class="theory-card" data-theory="ICT">
+        <span class="theory-tag">ICT</span>
+        <h3>Information Cascade Theory</h3>
+        <p class="mechanism">Group structure is determined by information flow and communication bandwidth limits.</p>
+        <ul class="prediction-list">
+          <li>Optimal group sizes from bandwidth</li>
+          <li>Splits when information overloads</li>
+          <li>Cascade-driven reorganization</li>
+          <li>Task-dependent configurations</li>
+        </ul>
+        <div class="theory-params">
+          Key param: <code>bandwidth</code> &nbsp;·&nbsp;
+          Math: information theory
+        </div>
+      </div>
+
+      <div class="theory-card" data-theory="TST">
+        <span class="theory-tag">TST</span>
+        <h3>Thermodynamic Social Theory</h3>
+        <p class="mechanism">Agents are spins in a Potts model - group structure is the ground state of a social energy function.</p>
+        <ul class="prediction-list">
+          <li>Phase transition at critical temperature</li>
+          <li>Power-law group sizes near T<sub>c</sub></li>
+          <li>High T → fluid, Low T → frozen</li>
+          <li>Metropolis-Hastings dynamics</li>
+        </ul>
+        <div class="theory-params">
+          Key param: <code>temperature</code> &nbsp;·&nbsp;
+          Math: statistical mechanics
+        </div>
+      </div>
+
+    </div>
+
+    <div style="margin-top: 2rem;">
+      <h3 style="font-size:1rem; font-weight:700; margin-bottom:1rem;">Theory comparison at a glance</h3>
+      <div class="compare-table-wrap">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Theory</th>
+              <th>Group boundary</th>
+              <th>Time evolution</th>
+              <th>Observer effects</th>
+              <th>Long-range</th>
+              <th>Best scale</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="color:var(--cft)">CFT</td>
+              <td>Binary, sharp</td>
+              <td>Rapid → equilibrium</td>
+              <td>None</td>
+              <td>None</td>
+              <td>n &lt; 50</td>
+            </tr>
+            <tr>
+              <td style="color:var(--gft)">GFT</td>
+              <td>Continuous, fuzzy</td>
+              <td>Smooth trajectories</td>
+              <td>None</td>
+              <td>Decays with distance</td>
+              <td>Any</td>
+            </tr>
+            <tr>
+              <td style="color:var(--qst)">QST</td>
+              <td>Probabilistic</td>
+              <td>Unitary until measured</td>
+              <td>Fundamental</td>
+              <td>Entanglement</td>
+              <td>n &lt; 20 (mean-field)</td>
+            </tr>
+            <tr>
+              <td style="color:var(--ict)">ICT</td>
+              <td>Communication-limited</td>
+              <td>Punctuated cascades</td>
+              <td>Indirect</td>
+              <td>Network-dependent</td>
+              <td>Medium</td>
+            </tr>
+            <tr>
+              <td style="color:var(--tst)">TST</td>
+              <td>Statistical, energy-based</td>
+              <td>Stochastic (MH sweeps)</td>
+              <td>None</td>
+              <td>Mean-field</td>
+              <td>n &gt; 100</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Results ───────────────────────────────────────────────────────── -->
+<section id="results">
+  <div class="container">
+    <div class="section-header">
+      <p class="section-label">Experimental Results</p>
+      <h2>What we've found so far</h2>
+      <p>
+        These are real results from real runs - not cherry-picked.
+        The methodology has known flaws (see <a href="#limitations">Limitations</a>),
+        which we're actively fixing.
+      </p>
+    </div>
+
+    <div class="results-layout">
+
+      <div class="result-card">
+        <h3>MiroFish-Offline Run #1</h3>
+        <p class="subtitle">6 AI agents (qwen2.5:14b) · 144 rounds · MBTI-typed · Reddit-style platform</p>
+
+        <div class="ranking-row">
+          <div class="rank-num gold">1</div>
+          <div class="theory-pill" style="background:#eff6ff;color:var(--cft)">CFT</div>
+          <div class="nmi-bar-wrap">
+            <div class="nmi-bar-label">NMI score</div>
+            <div class="nmi-bar-outer"><div class="nmi-bar-inner" style="width:100%;background:var(--cft)"></div></div>
+          </div>
+          <div class="nmi-score" style="color:var(--cft)">0.716</div>
+        </div>
+        <div class="ranking-row">
+          <div class="rank-num">2</div>
+          <div class="theory-pill" style="background:#f0fdf4;color:var(--gft)">GFT</div>
+          <div class="nmi-bar-wrap">
+            <div class="nmi-bar-label">NMI score</div>
+            <div class="nmi-bar-outer"><div class="nmi-bar-inner" style="width:32%;background:var(--gft)"></div></div>
+          </div>
+          <div class="nmi-score" style="color:var(--gft)">0.231</div>
+        </div>
+        <div class="ranking-row">
+          <div class="rank-num">3</div>
+          <div class="theory-pill" style="background:#fef2f2;color:var(--tst)">TST</div>
+          <div class="nmi-bar-wrap">
+            <div class="nmi-bar-label">NMI score</div>
+            <div class="nmi-bar-outer"><div class="nmi-bar-inner" style="width:11%;background:var(--tst)"></div></div>
+          </div>
+          <div class="nmi-score" style="color:var(--tst)">0.082</div>
+        </div>
+
+        <p style="font-size:.78rem;color:var(--muted);margin-top:1rem;line-height:1.5;">
+          Ground truth: two clusters - {CFT, TST, GFT} and {ICT, QST, Thermodynamic}.<br>
+          ⚠ These scores use circular ground truth (same data for affinity + GT).
+          See <a href="#limitations">limitation #23</a>.
+        </p>
+      </div>
+
+      <div class="result-card">
+        <h3>Synthetic Scenario Performance</h3>
+        <p class="subtitle">4 scenarios · n=40 agents · seed=42 · default parameters</p>
+
+        <div style="margin-bottom:1rem;">
+          <div style="font-size:.8rem;font-weight:700;margin-bottom:.5rem;">Clustered (k=3, β=4)</div>
+          <div style="font-size:.8rem;color:var(--muted);">CFT leads - sharp affinity threshold aligns well with hard cluster boundaries.</div>
+        </div>
+        <div style="margin-bottom:1rem;">
+          <div style="font-size:.8rem;font-weight:700;margin-bottom:.5rem;">Polarized (2 camps)</div>
+          <div style="font-size:.8rem;color:var(--muted);">CFT and TST competitive - binary group structure matches threshold and Potts phases.</div>
+        </div>
+        <div style="margin-bottom:1rem;">
+          <div style="font-size:.8rem;font-weight:700;margin-bottom:.5rem;">Random (no structure)</div>
+          <div style="font-size:.8rem;color:var(--muted);">All theories converge - CTAI high, no discriminating power. Expected result.</div>
+        </div>
+        <div>
+          <div style="font-size:.8rem;font-weight:700;margin-bottom:.5rem;">Hierarchical (5 influencers)</div>
+          <div style="font-size:.8rem;color:var(--muted);">ICT shows stronger relative performance - bandwidth limits model hub-spoke structure.</div>
+        </div>
+
+        <p style="font-size:.78rem;color:var(--muted);margin-top:1.2rem;">
+          ⚠ Single run per scenario. No statistical significance testing yet on these.
+          Use <code>n_runs=10</code> for valid comparisons.
+        </p>
+      </div>
+
+    </div>
+
+    <div style="margin-top:2rem;">
+      <h3 style="font-size:1rem;font-weight:700;margin-bottom:1rem;">Hypotheses tested</h3>
+      <div class="compare-table-wrap">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Claim</th>
+              <th>Status</th>
+              <th>Evidence</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>CFT produces fewer groups than GFT on polarized data</td>
+              <td><span style="color:#16a34a;font-weight:700">✓ Supported</span></td>
+              <td>CFT converges to 2 groups; GFT produces 4–6 metastable clusters</td>
+            </tr>
+            <tr>
+              <td>TST exhibits a phase transition (group count varies with temperature)</td>
+              <td><span style="color:#16a34a;font-weight:700">✓ Supported</span></td>
+              <td>Variance in group count &gt; 0.5 across T ∈ [0.1, 3.0]</td>
+            </tr>
+            <tr>
+              <td>All theories agree on strongly clustered data (CTAI &gt; 0.6)</td>
+              <td><span style="color:#d97706;font-weight:700">⚠ Conditional</span></td>
+              <td>True at β ≥ 6; fails at β &lt; 2 (weak clustering)</td>
+            </tr>
+            <tr>
+              <td>CFT outperforms all others on the MiroFish AI-agent run</td>
+              <td><span style="color:#16a34a;font-weight:700">✓ Supported</span></td>
+              <td>NMI 0.716 vs 0.231 (GFT) - but single seed, circular GT</td>
+            </tr>
+            <tr>
+              <td>Theories can predict future group structure from past interactions</td>
+              <td><span style="color:#6b7280;font-weight:700">○ Preliminary</span></td>
+              <td>temporal_prediction() implemented; needs multi-run validation</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Methodology ───────────────────────────────────────────────────── -->
+<section id="methodology">
+  <div class="container">
+    <div class="section-header">
+      <p class="section-label">Methodology</p>
+      <h2>How we validate theories</h2>
+      <p>
+        Each methodological choice is documented, justified, and - where flawed -
+        flagged as a known limitation with a proposed fix.
+      </p>
+    </div>
+
+    <div class="method-grid">
+
+      <div class="method-card">
+        <p class="m-label">Scoring</p>
+        <h4>PAS - Prediction Accuracy Score</h4>
+        <p>Combines group count accuracy, partition similarity (NMI), and size distribution accuracy into a single score ∈ [0, 1].</p>
+      </div>
+
+      <div class="method-card">
+        <p class="m-label">Agreement</p>
+        <h4>CTAI - Cross-Theory Agreement Index</h4>
+        <p>Mean pairwise NMI across all theory pairs. High CTAI means theories converge - low means the data is genuinely ambiguous.</p>
+      </div>
+
+      <div class="method-card">
+        <p class="m-label">Temporal</p>
+        <h4>Temporal train/eval split</h4>
+        <p>Early interactions build the affinity matrix; late interactions define ground-truth communities. Breaks the circular evaluation loop where both are derived from the same data.</p>
+        <p class="issue-ref">Fixes <a href="https://github.com/rivirside/cft/issues/23">#23 - Circular ground truth</a></p>
+      </div>
+
+      <div class="method-card">
+        <p class="m-label">Inference</p>
+        <h4>MCMC weight inference</h4>
+        <p>Metropolis-Hastings over interaction weights (follow, like, repost…). Posterior mean replaces hardcoded defaults. Fold-over reflection keeps samples in bounds.</p>
+        <p class="issue-ref">Fixes <a href="https://github.com/rivirside/cft/issues/21">#21 - Arbitrary weights</a></p>
+      </div>
+
+      <div class="method-card">
+        <p class="m-label">Inference</p>
+        <h4>MCMC parameter inference</h4>
+        <p>Same MCMC machinery infers theory-specific parameters (CFT threshold, GFT k/sigma, TST temperature). Replaces manual tuning with a posterior distribution.</p>
+        <p class="issue-ref">Fixes <a href="https://github.com/rivirside/cft/issues/22">#22 - Arbitrary theory params</a></p>
+      </div>
+
+      <div class="method-card">
+        <p class="m-label">Complexity</p>
+        <h4>Marginal likelihood comparison</h4>
+        <p>Log marginal likelihood <code>= logsumexp(log_liks) − log(n)</code> over the MCMC chain gives an implicit Occam's razor. Theories with more free parameters must fit better to win.</p>
+        <p class="issue-ref">Fixes <a href="https://github.com/rivirside/cft/issues/24">#24 - Ignores complexity</a></p>
+      </div>
+
+      <div class="method-card">
+        <p class="m-label">Statistics</p>
+        <h4>Multi-run + Wilcoxon test</h4>
+        <p>Run the full pipeline <code>n_runs</code> times with offset seeds. Report mean ± std NMI. For n ≥ 5, Wilcoxon signed-rank test determines whether the top-ranked theory is significantly better.</p>
+        <p class="issue-ref">Fixes <a href="https://github.com/rivirside/cft/issues/27">#27 - Single seed instability</a></p>
+      </div>
+
+      <div class="method-card">
+        <p class="m-label">Data</p>
+        <h4>OASIS event-log import</h4>
+        <p><code>MiroFishAdapter.from_oasis_dir()</code> converts MiroFish-Offline / camel-oasis CSV + JSONL logs directly into the normalized format CFT expects. No hand-written conversion scripts.</p>
+        <p class="issue-ref">Fixes <a href="https://github.com/rivirside/cft/issues/26">#26 - Manual OASIS conversion</a></p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── Limitations ───────────────────────────────────────────────────── -->
+<section id="limitations">
+  <div class="container">
+    <div class="section-header">
+      <p class="section-label">Known Limitations</p>
+      <h2>What we know is wrong</h2>
+      <p>
+        Publishing limitations is part of the point. Every item below has a GitHub issue,
+        a proposed fix, and a status. Transparency over appearance.
+      </p>
+    </div>
+
+    <div class="limitations-list">
+
+      <div class="limitation-item closed">
+        <div class="limitation-meta">
+          <span class="lim-issue">#23</span>
+          <span class="lim-status status-closed">Fixed</span>
+        </div>
+        <h4>Circular ground truth</h4>
+        <p>Affinity matrix and Louvain ground truth were both derived from the same interaction data - measuring reconstruction, not prediction. Fixed via temporal train/eval split in <code>compare_theories(use_temporal_split=True)</code>.</p>
+      </div>
+
+      <div class="limitation-item closed">
+        <div class="limitation-meta">
+          <span class="lim-issue">#21</span>
+          <span class="lim-status status-closed">Fixed</span>
+        </div>
+        <h4>Arbitrary interaction weights</h4>
+        <p>follow=0.3, like=0.2, repost=0.4 were chosen by intuition. Now inferred via MCMC: <code>MCMCInference(adapter, CFT).infer_weights()</code>.</p>
+      </div>
+
+      <div class="limitation-item closed">
+        <div class="limitation-meta">
+          <span class="lim-issue">#22</span>
+          <span class="lim-status status-closed">Fixed</span>
+        </div>
+        <h4>Arbitrary theory parameters</h4>
+        <p>CFT threshold=0.6, GFT k=0.1, TST temperature=1.0 were set manually. Now inferred: <code>mcmc.infer_theory_params(DEFAULT_THEORY_PARAM_SPECS["CFT"])</code>.</p>
+      </div>
+
+      <div class="limitation-item closed">
+        <div class="limitation-meta">
+          <span class="lim-issue">#24</span>
+          <span class="lim-status status-closed">Fixed</span>
+        </div>
+        <h4>No penalty for model complexity</h4>
+        <p>A theory with more free parameters could win by overfitting. Fixed by marginal likelihood comparison: <code>compare_theories_by_evidence()</code> applies an implicit Occam's razor.</p>
+      </div>
+
+      <div class="limitation-item closed">
+        <div class="limitation-meta">
+          <span class="lim-issue">#27</span>
+          <span class="lim-status status-closed">Fixed</span>
+        </div>
+        <h4>Single simulation run - unstable rankings</h4>
+        <p>Stochastic theories (TST, QST) and stochastic Louvain meant rankings could vary. Fixed: <code>compare_theories(n_runs=10)</code> reports mean ± std NMI with Wilcoxon significance test.</p>
+      </div>
+
+      <div class="limitation-item closed">
+        <div class="limitation-meta">
+          <span class="lim-issue">#26</span>
+          <span class="lim-status status-closed">Fixed</span>
+        </div>
+        <h4>MiroFish OASIS output required manual conversion</h4>
+        <p>Real MiroFish produces OASIS-format CSV + JSONL that didn't match the adapter's expected format. Fixed: <code>MiroFishAdapter.from_oasis_dir()</code> handles conversion automatically.</p>
+      </div>
+
+      <div class="limitation-item open">
+        <div class="limitation-meta">
+          <span class="lim-issue">#25</span>
+          <span class="lim-status status-open">Open</span>
+        </div>
+        <h4>MBTI features are binary and coarse</h4>
+        <p>MBTI types are encoded as four {−1, +1} dimensions. All INTJs are identical; within-type variation is lost. Proposed fix: support continuous Big-Five (OCEAN) scores or learn a continuous embedding from interaction data.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── Dev Log ───────────────────────────────────────────────────────── -->
+<section id="devlog" class="devlog">
+  <div class="container">
+    <div class="section-header">
+      <p class="section-label">Dev Log</p>
+      <h2>Building in public</h2>
+      <p>What's been shipped, what's in progress, what's next.</p>
+    </div>
+
+    <div class="log-entries">
+
+      <div class="log-entry latest">
+        <div class="log-date">2026-03-18</div>
+        <h4>Fixed all 5 priority methodological issues</h4>
+        <p>
+          Temporal split in <code>compare_theories()</code> breaks circular ground truth (#23).
+          MCMC inference module (<code>cft/inference.py</code>) infers weights and theory
+          parameters from data (#21, #22) and estimates marginal likelihoods for
+          complexity-penalised comparison (#24).
+          <code>n_runs</code> + Wilcoxon signed-rank test for statistical validation (#27).
+          <code>MiroFishAdapter.from_oasis_dir()</code> for OASIS format direct import (#26).
+        </p>
+        <div class="log-tags">
+          <span class="log-tag tag-fix">fix #23</span>
+          <span class="log-tag tag-method">MCMC #21 #22 #24</span>
+          <span class="log-tag tag-fix">stats #27</span>
+          <span class="log-tag tag-fix">oasis #26</span>
+        </div>
+      </div>
+
+      <div class="log-entry">
+        <div class="log-date">2026-03-17</div>
+        <h4>First MiroFish-Offline run completed</h4>
+        <p>
+          Ran a 144-round simulation with 6 LLM-backed agents (qwen2.5:14b, nomic-embed-text)
+          on a synthetic Reddit-style platform. Ground truth: two clusters emerged.
+          CFT won with NMI=0.716 but methodology was compromised by circular ground truth -
+          opened issues #21–#27 to document and fix.
+        </p>
+        <div class="log-tags">
+          <span class="log-tag tag-feat">experiment</span>
+          <span class="log-tag tag-method">analysis</span>
+        </div>
+      </div>
+
+      <div class="log-entry">
+        <div class="log-date">2026-03-17</div>
+        <h4>SocialSimulator + HypothesisTester shipped</h4>
+        <p>
+          Built-in synthetic social simulator (no external deps) with four scenarios.
+          HypothesisTester wraps the full pipeline: compare, sweep, temporal prediction,
+          named claims. 276 passing tests.
+        </p>
+        <div class="log-tags">
+          <span class="log-tag tag-feat">simulator</span>
+          <span class="log-tag tag-feat">hypothesis testing</span>
+        </div>
+      </div>
+
+      <div class="log-entry">
+        <div class="log-date">2026-03-17</div>
+        <h4>All five theories implemented</h4>
+        <p>
+          CFT, GFT, QST (mean-field), ICT, TST (Potts/Metropolis-Hastings) - all sharing
+          the same <code>BehaviorTheory</code> base class, same affinity interface, same
+          history format. MiroFish adapter + PredictionTournament with PAS/DFI/PSS/CTAI.
+        </p>
+        <div class="log-tags">
+          <span class="log-tag tag-feat">theories</span>
+          <span class="log-tag tag-feat">scoring</span>
+        </div>
+      </div>
+
+      <div class="log-entry">
+        <div class="log-date">2026-03-17</div>
+        <h4>Repository scaffolded</h4>
+        <p>
+          Created <code>cft/</code> package from scratch: pyproject.toml, base classes,
+          theory interface, affinity computation, comparator, visualization, notebooks.
+          pip-installable with optional extras.
+        </p>
+        <div class="log-tags">
+          <span class="log-tag tag-feat">scaffolding</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="margin-top:2.5rem;padding:1.5rem;background:#161b22;border-radius:8px;border:1px solid #21262d;">
+      <h4 style="color:#e6edf3;font-size:.95rem;margin-bottom:.5rem;">What's next</h4>
+      <p style="color:#8b949e;font-size:.85rem;line-height:1.6;">
+        Issue #25 - replace binary MBTI features with continuous Big-Five (OCEAN) scores.
+        More MiroFish simulation runs with the temporal split enabled to get clean NMI scores.
+        Notebook updates to showcase MCMC inference and multi-run comparison.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ── Install ───────────────────────────────────────────────────────── -->
+<section id="install">
+  <div class="container">
+    <div class="section-header">
+      <p class="section-label">Code</p>
+      <h2>Use it yourself</h2>
+      <p>Pure Python, no external LLM or database required. Optional pandas + networkx for real-data workflows.</p>
+    </div>
+
+    <div class="install-grid">
+      <div>
+        <div class="install-step">
+          <div class="install-step-label">Install</div>
+          <pre><code>git clone https://github.com/rivirside/cft.git
+cd cft
+pip install -e ".[dev]"   # or .[mirofish] or .[all]
+pytest                     # 276 tests</code></pre>
+        </div>
+        <div class="install-step">
+          <div class="install-step-label">Quick comparison</div>
+          <pre><code>from cft import SocialSimulator, HypothesisTester
+
+sim = SocialSimulator(
+    n_agents=40, scenario="clustered",
+    k=3, T=30, seed=42
+)
+ht = HypothesisTester(simulator=sim)
+
+# Single run
+result = ht.compare_theories(use_temporal_split=True)
+print(result["rankings"])
+
+# Statistical validation (n ≥ 5 for Wilcoxon)
+result = ht.compare_theories(n_runs=10)
+print(result["mean_similarity"])
+print(result["wilcoxon_pvalue"])</code></pre>
+        </div>
+      </div>
+      <div>
+        <div class="install-step">
+          <div class="install-step-label">MCMC parameter inference</div>
+          <pre><code>from cft import MCMCInference, CFT
+from cft.integrations.mirofish import MiroFishAdapter
+
+adapter = MiroFishAdapter("sim_dir")
+adapter.load_agents()
+adapter.load_interactions()
+
+mcmc = MCMCInference(adapter, CFT, seed=42)
+
+# Infer interaction weights from data
+weights = mcmc.infer_weights(n_samples=2000)
+print(weights.map_estimate)
+print(weights.posterior_std)
+
+# Complexity-penalised theory comparison
+from cft import compare_theories_by_evidence, GFT
+log_ml = compare_theories_by_evidence(
+    adapter, {"CFT": CFT, "GFT": GFT}
+)
+print(log_ml)  # higher = better evidence</code></pre>
+        </div>
+        <div class="install-step">
+          <div class="install-step-label">Load a MiroFish-Offline (OASIS) run</div>
+          <pre><code>from cft.integrations.mirofish import MiroFishAdapter
+
+adapter = MiroFishAdapter.from_oasis_dir(
+    "/path/to/oasis_sim"
+)
+# agents + interactions pre-loaded
+
+affinity = adapter.compute_affinity_matrix()
+groups = adapter.extract_ground_truth_groups()
+adapter.cleanup_oasis()</code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ───────────────────────────────────────────────────────── -->
+<footer>
+  <div class="container footer-inner">
+    <span>CFT - Multi-Theory Group Formation Framework · MIT License</span>
+    <span>
+      <a href="https://github.com/rivirside/cft" target="_blank">GitHub</a> ·
+      <a href="https://github.com/rivirside/cft/blob/main/LIMITATIONS.md" target="_blank">Limitations</a> ·
+      <a href="https://github.com/rivirside/cft/issues" target="_blank">Issues</a>
+    </span>
+  </div>
+</footer>
+
+</body>
+</html>

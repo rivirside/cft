@@ -1,0 +1,43 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "cft"
+version = "0.1.0"
+description = "Multi-theory framework for modeling group formation and fracture dynamics"
+readme = "README.md"
+requires-python = ">=3.9"
+license = "MIT"
+authors = [
+    { name = "rivirside" },
+]
+keywords = ["group-dynamics", "agent-based-modeling", "social-simulation", "swarm-intelligence"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Programming Language :: Python :: 3",
+]
+dependencies = [
+    "numpy>=1.24",
+    "scipy>=1.10",
+    "matplotlib>=3.7",
+]
+
+[project.optional-dependencies]
+viz = ["plotly>=5.0"]
+mirofish = ["pandas>=2.0", "networkx>=3.0"]
+dev = ["pytest>=7.0", "ruff>=0.1.0"]
+all = ["cft[viz,mirofish,dev]"]
+
+[project.urls]
+Repository = "https://github.com/rivirside/cft"
+Issues = "https://github.com/rivirside/cft/issues"
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
