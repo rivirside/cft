@@ -19,6 +19,7 @@
   --qst:  #7c3aed;
   --ict:  #ea580c;
   --tst:  #dc2626;
+  --dct:  #0891b2;
 }
 
 html { scroll-behavior: smooth; }
@@ -234,6 +235,7 @@ nav {
 .theory-card[data-theory="QST"] { --c: var(--qst); }
 .theory-card[data-theory="ICT"] { --c: var(--ict); }
 .theory-card[data-theory="TST"] { --c: var(--tst); }
+.theory-card[data-theory="DCT"] { --c: var(--dct); }
 
 .theory-tag {
   display: inline-block;

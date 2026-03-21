@@ -56,7 +56,7 @@ class TestParameterSpec:
         assert names == {"follow", "like", "repost", "pos_comment", "neg_comment"}
 
     def test_default_theory_param_specs_keys(self):
-        assert set(DEFAULT_THEORY_PARAM_SPECS.keys()) == {"CFT", "GFT", "TST", "QST", "ICT"}
+        assert set(DEFAULT_THEORY_PARAM_SPECS.keys()) == {"CFT", "GFT", "TST", "QST", "ICT", "DCT"}
 
 
 # ---------------------------------------------------------------------------

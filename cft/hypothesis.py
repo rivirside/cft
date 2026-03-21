@@ -31,7 +31,7 @@ from typing import Any, Dict, List, Optional, Tuple
 import numpy as np
 
 from .theories.base import Agent, Group, TheoryParameters
-from .theories import CFT, GFT, QST, ICT, TST
+from .theories import CFT, GFT, QST, ICT, TST, DCT
 from .tournament import PredictionTournament
 from .comparator import TheoryComparator
 from .simulator import SocialSimulator
@@ -43,6 +43,7 @@ DEFAULT_THEORIES: Dict[str, Dict[str, Any]] = {
     "QST": {"class": QST, "n_states": 5},
     "ICT": {"class": ICT, "bandwidth": 3},
     "TST": {"class": TST, "temperature": 1.0, "sweeps_per_step": 10},
+    "DCT": {"class": DCT, "mu": 0.3, "lam": 0.05, "noise": 0.1, "threshold": 0.3},
 }
 
 # Named claim identifiers

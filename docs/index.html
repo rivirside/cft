@@ -19,6 +19,7 @@
     <ul class="nav-links">
       <li><a href="#theories">Theories</a></li>
       <li><a href="#results">Results</a></li>
+      <li><a href="#interventions">Interventions</a></li>
       <li><a href="#methodology">Methodology</a></li>
       <li><a href="#limitations">Limitations</a></li>
       <li><a href="#devlog">Dev Log</a></li>
@@ -36,8 +37,9 @@
     <p class="eyebrow">◈ Open Research · Python Library</p>
     <h1>Which theory best explains how <em>groups</em> form and fracture?</h1>
     <p class="lead">
-      Five competing mathematical models. One synthetic social simulator.
+      Six competing mathematical models. One synthetic social simulator.
       Bayesian parameter inference. Real AI-agent simulation data.
+      Intervention testing and resilience analysis.
       All compared head-to-head - and all limitations documented openly.
     </p>
     <div class="hero-actions">
@@ -47,11 +49,11 @@
 
     <div class="hero-stats">
       <div class="stat-item">
-        <div class="stat-num">5</div>
+        <div class="stat-num">6</div>
         <div class="stat-label">Theories</div>
       </div>
       <div class="stat-item">
-        <div class="stat-num">276</div>
+        <div class="stat-num">371</div>
         <div class="stat-label">Passing tests</div>
       </div>
       <div class="stat-item">
@@ -110,10 +112,10 @@
   <div class="container">
     <div class="section-header">
       <p class="section-label">The Theories</p>
-      <h2>Five mechanisms - one dataset</h2>
+      <h2>Six mechanisms - one dataset</h2>
       <p>
         Each theory offers a different answer to <em>"why do people cluster?"</em>
-        All five are implemented with the same interface, scored against the same ground truth,
+        All six are implemented with the same interface, scored against the same ground truth,
         and given the same affinity data.
       </p>
     </div>
@@ -200,6 +202,22 @@
         </div>
       </div>
 
+      <div class="theory-card" data-theory="DCT">
+        <span class="theory-tag">DCT</span>
+        <h3>Dual-Context Theory</h3>
+        <p class="mechanism">Agents exist in two coupled spaces - proximity (who you're near) and alignment (what you believe). Groups form only where both layers agree.</p>
+        <ul class="prediction-list">
+          <li>Two timescales: fast proximity, slow alignment</li>
+          <li>Per-agent seeking and conformity rates</li>
+          <li>Layer tension predicts instability</li>
+          <li>Models code-switching and forced coexistence</li>
+        </ul>
+        <div class="theory-params">
+          Key params: <code>mu</code> (seeking), <code>lam</code> (conformity), <code>trait_map</code> &nbsp;·&nbsp;
+          Math: coupled ODEs + spectral embedding
+        </div>
+      </div>
+
     </div>
 
     <div style="margin-top: 2rem;">
@@ -256,6 +274,14 @@
               <td>None</td>
               <td>Mean-field</td>
               <td>n &gt; 100</td>
+            </tr>
+            <tr>
+              <td style="color:var(--dct)">DCT</td>
+              <td>Dual-layer (proximity + alignment)</td>
+              <td>Two coupled timescales</td>
+              <td>None</td>
+              <td>Via alignment layer</td>
+              <td>Any</td>
             </tr>
           </tbody>
         </table>
@@ -362,7 +388,7 @@
             <tr>
               <td>CFT produces fewer groups than GFT on polarized data</td>
               <td><span style="color:#16a34a;font-weight:700">✓ Supported</span></td>
-              <td>CFT converges to 2 groups; GFT produces 4–6 metastable clusters</td>
+              <td>CFT converges to 2 groups; GFT produces 4-6 metastable clusters</td>
             </tr>
             <tr>
               <td>TST exhibits a phase transition (group count varies with temperature)</td>
@@ -386,6 +412,69 @@
             </tr>
           </tbody>
         </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Interventions ──────────────────────────────────────────────────── -->
+<section id="interventions">
+  <div class="container">
+    <div class="section-header">
+      <p class="section-label">Intervention System</p>
+      <h2>Perturb, measure, understand</h2>
+      <p>
+        Apply perturbations mid-simulation and measure how groups respond.
+        Who breaks? Who recovers? Which traits predict resilience?
+      </p>
+    </div>
+
+    <div class="scenario-grid">
+      <div class="scenario-card">
+        <div class="icon">&#x1f4a5;</div>
+        <h4>Point-in-time interventions</h4>
+        <p>Remove agents, shift features, add infiltrators, inject noise shocks, modify affinity between pairs - all at precise simulation times.</p>
+      </div>
+      <div class="scenario-card">
+        <div class="icon">&#x1f4c8;</div>
+        <h4>Sustained interventions</h4>
+        <p>Model ongoing propaganda (SustainedShift), prolonged instability (SustainedNoise), or platform algorithm bias (SustainedAffinityBias) over time ranges.</p>
+      </div>
+      <div class="scenario-card">
+        <div class="icon">&#x1f6e1;</div>
+        <h4>Resilience analysis</h4>
+        <p>InterventionReport tracks stability curves, fracture/merge events, group survival rates, per-agent vulnerability rankings, and recovery metrics.</p>
+      </div>
+      <div class="scenario-card">
+        <div class="icon">&#x1f9ec;</div>
+        <h4>TraitMap - per-agent behavior</h4>
+        <p>Derive seeking and conformity rates from personality (MBTI), influence scores, or custom features. Different people respond differently to the same pressure.</p>
+      </div>
+    </div>
+
+    <div style="margin-top:2rem;">
+      <h3 style="font-size:1rem;font-weight:700;margin-bottom:1rem;">Example: leader removal + sustained propaganda</h3>
+      <div class="install-step">
+        <pre><code>from cft import DCT, TheoryParameters, Agent, InterventionRunner
+from cft import RemoveAgents, SustainedShift, SustainedNoise
+import numpy as np
+
+# Set up theory with per-agent traits
+theory = DCT(params, trait_map="influence", noise=0.05)
+theory.initialize_agents(agents)
+
+# Remove the leader at t=5, apply sustained propaganda t=3-8
+runner = InterventionRunner(theory,
+    interventions=[RemoveAgents(time=5.0, agent_ids=[leader_id])],
+    sustained=[
+        SustainedShift(start=3.0, end=8.0, agent_ids=target_ids,
+                       delta_per_step=np.array([0.0, 0.0, 0.1, 0.0])),
+    ],
+)
+report = runner.run(t_max=15.0, dt=0.5)
+
+print(report.resilience_scores)
+print(report.vulnerability_ranking()[:5])  # most vulnerable agents</code></pre>
       </div>
     </div>
   </div>
@@ -556,6 +645,39 @@
     <div class="log-entries">
 
       <div class="log-entry latest">
+        <div class="log-date">2026-03-20</div>
+        <h4>DCT advanced features: TraitMap, sustained interventions, separate sources</h4>
+        <p>
+          TraitMap derives per-agent seeking/conformity rates from personality features or metadata
+          (presets: <code>"mbti"</code>, <code>"influence"</code>).
+          Three sustained intervention types model ongoing pressure over time ranges.
+          DCT now accepts separate proximity and alignment data sources via spectral embedding.
+          371 passing tests.
+        </p>
+        <div class="log-tags">
+          <span class="log-tag tag-feat">TraitMap</span>
+          <span class="log-tag tag-feat">sustained interventions</span>
+          <span class="log-tag tag-feat">separate sources</span>
+        </div>
+      </div>
+
+      <div class="log-entry">
+        <div class="log-date">2026-03-19</div>
+        <h4>Intervention system + DCT (Dual-Context Theory)</h4>
+        <p>
+          Full intervention framework: 7 point-in-time perturbations (RemoveAgents, ShiftFeatures,
+          AddAgent, NoiseShock, ModifyAffinity, ShiftProximity, ShiftAlignment) plus
+          InterventionRunner with resilience analysis. DCT adds a 6th theory with two coupled
+          layers - proximity and alignment - with per-agent behavioral parameters.
+        </p>
+        <div class="log-tags">
+          <span class="log-tag tag-feat">interventions</span>
+          <span class="log-tag tag-feat">DCT</span>
+          <span class="log-tag tag-feat">resilience</span>
+        </div>
+      </div>
+
+      <div class="log-entry">
         <div class="log-date">2026-03-18</div>
         <h4>Fixed all 5 priority methodological issues</h4>
         <p>
@@ -581,7 +703,7 @@
           Ran a 144-round simulation with 6 LLM-backed agents (qwen2.5:14b, nomic-embed-text)
           on a synthetic Reddit-style platform. Ground truth: two clusters emerged.
           CFT won with NMI=0.716 but methodology was compromised by circular ground truth -
-          opened issues #21–#27 to document and fix.
+          opened issues #21-#27 to document and fix.
         </p>
         <div class="log-tags">
           <span class="log-tag tag-feat">experiment</span>
@@ -636,8 +758,9 @@
       <h4 style="color:#e6edf3;font-size:.95rem;margin-bottom:.5rem;">What's next</h4>
       <p style="color:#8b949e;font-size:.85rem;line-height:1.6;">
         Issue #25 - replace binary MBTI features with continuous Big-Five (OCEAN) scores.
+        Intervention scenario library - pre-built scenarios for common social dynamics questions.
+        DCT + TraitMap integration with MiroFish data - derive seeking/conformity from real agent interactions.
         More MiroFish simulation runs with the temporal split enabled to get clean NMI scores.
-        Notebook updates to showcase MCMC inference and multi-run comparison.
       </p>
     </div>
   </div>
@@ -659,7 +782,7 @@
           <pre><code>git clone https://github.com/rivirside/cft.git
 cd cft
 pip install -e ".[dev]"   # or .[mirofish] or .[all]
-pytest                     # 276 tests</code></pre>
+pytest                     # 371 tests</code></pre>
         </div>
         <div class="install-step">
           <div class="install-step-label">Quick comparison</div>

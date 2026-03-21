@@ -129,6 +129,11 @@ DEFAULT_THEORY_PARAM_SPECS: Dict[str, List[ParameterSpec]] = {
     "TST": [ParameterSpec("temperature", 0.05, 5.0, 1.0)],
     "QST": [ParameterSpec("n_states",    2.0, 20.0, 5.0)],
     "ICT": [ParameterSpec("bandwidth",   1.0, 10.0, 3.0)],
+    "DCT": [
+        ParameterSpec("mu",        0.01, 1.0, 0.3),
+        ParameterSpec("lam",       0.001, 0.5, 0.05),
+        ParameterSpec("threshold", 0.05, 0.9, 0.3),
+    ],
 }
 
 

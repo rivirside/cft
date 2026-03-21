@@ -6,6 +6,7 @@ from .gft import GFT
 from .qst import QST
 from .ict import ICT
 from .tst import TST
+from .dct import DCT
 
 __all__ = [
     "Agent",
@@ -17,4 +18,5 @@ __all__ = [
     "QST",
     "ICT",
     "TST",
+    "DCT",
 ]

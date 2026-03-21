@@ -1,0 +1,189 @@
+experiments:
+- id: baseline-clustered
+  question: Which theory best predicts group structure in clustered scenarios?
+  status: completed
+  priority: 5
+  created_by: seed
+  config:
+    type: compare_theories
+    n_runs: 10
+    use_temporal_split: true
+    simulator:
+      n_agents: 40
+      scenario: clustered
+      k: 3
+      T: 30
+      seed: 42
+  result_file: research/results/20260319-050111_baseline-clustered.json
+  completed_at: '2026-03-19T05:01:11.689524+00:00'
+- id: baseline-polarized
+  question: Which theory best predicts group structure in polarized scenarios?
+  status: completed
+  priority: 5
+  created_by: seed
+  config:
+    type: compare_theories
+    n_runs: 10
+    use_temporal_split: true
+    simulator:
+      n_agents: 40
+      scenario: polarized
+      T: 30
+      seed: 42
+  result_file: research/results/20260319-050112_baseline-polarized.json
+  completed_at: '2026-03-19T05:01:12.678676+00:00'
+- id: baseline-hierarchical
+  question: Which theory best predicts group structure in hierarchical scenarios?
+  status: pending
+  priority: 5
+  created_by: seed
+  config:
+    type: compare_theories
+    n_runs: 10
+    use_temporal_split: true
+    simulator:
+      n_agents: 40
+      scenario: hierarchical
+      n_influencers: 5
+      T: 30
+      seed: 42
+- id: baseline-random
+  question: Which theory best predicts group structure in random scenarios?
+  status: pending
+  priority: 4
+  created_by: seed
+  config:
+    type: compare_theories
+    n_runs: 10
+    use_temporal_split: true
+    simulator:
+      n_agents: 40
+      scenario: random
+      T: 30
+      seed: 42
+- id: dct-seeking-sweep
+  question: How does DCT seeking rate (mu) affect group detection accuracy?
+  status: pending
+  priority: 4
+  created_by: seed
+  config:
+    type: parameter_sweep
+    param: mu
+    values:
+    - 0.01
+    - 0.05
+    - 0.1
+    - 0.3
+    - 0.5
+    - 1.0
+    simulator:
+      n_agents: 40
+      scenario: clustered
+      k: 3
+      T: 30
+      seed: 42
+    theories:
+      DCT:
+        mu: 0.3
+        lam: 0.05
+        noise: 0.1
+        threshold: 0.3
+- id: dct-conformity-sweep
+  question: How does DCT conformity rate (lam) affect alignment homogenization?
+  status: pending
+  priority: 4
+  created_by: seed
+  config:
+    type: parameter_sweep
+    param: lam
+    values:
+    - 0.0
+    - 0.01
+    - 0.05
+    - 0.1
+    - 0.2
+    - 0.5
+    simulator:
+      n_agents: 40
+      scenario: clustered
+      k: 3
+      T: 30
+      seed: 42
+    theories:
+      DCT:
+        mu: 0.3
+        lam: 0.05
+        noise: 0.1
+        threshold: 0.3
+- id: clustering-strength-sweep
+  question: How does clustering strength (beta) affect theory rankings and CTAI?
+  status: pending
+  priority: 3
+  created_by: seed
+  config:
+    type: parameter_sweep
+    param: beta
+    values:
+    - 0.5
+    - 1.0
+    - 2.0
+    - 4.0
+    - 8.0
+    - 16.0
+    simulator:
+      n_agents: 40
+      scenario: clustered
+      k: 3
+      T: 30
+      seed: 42
+- id: scale-effects
+  question: How does population size affect theory rankings on clustered data?
+  status: pending
+  priority: 3
+  created_by: seed
+  config:
+    type: parameter_sweep
+    param: n_agents
+    values:
+    - 10
+    - 20
+    - 40
+    - 60
+    - 80
+    simulator:
+      n_agents: 40
+      scenario: clustered
+      k: 3
+      T: 30
+      seed: 42
+- id: temporal-prediction-polarized
+  question: Can theories predict future groups from early interactions in polarized
+    data?
+  status: pending
+  priority: 3
+  created_by: seed
+  config:
+    type: temporal_prediction
+    t_freeze: 15
+    t_predict: 30
+    simulator:
+      n_agents: 40
+      scenario: polarized
+      T: 30
+      seed: 42
+- id: claim-agreement-high-beta
+  question: Do all theories converge when clustering is very strong (beta=8)?
+  status: pending
+  priority: 2
+  created_by: seed
+  config:
+    type: test_claim
+    claim: all_theories_agree_on_clustered
+    beta: 8.0
+    ctai_threshold: 0.5
+    simulator:
+      n_agents: 40
+      scenario: clustered
+      k: 3
+      T: 30
+      seed: 42

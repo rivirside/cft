@@ -1,0 +1,80 @@
+name: AutoResearch
+
+on:
+  schedule:
+    # Run daily at 06:00 UTC
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    inputs:
+      max_experiments:
+        description: 'Max experiments to run this cycle'
+        required: false
+        default: '3'
+      run_only:
+        description: 'Skip Claude interpretation (true/false)'
+        required: false
+        default: 'false'
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -e ".[mirofish]"
+          pip install anthropic pyyaml
+
+      - name: Run research agent
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          MAX_EXPERIMENTS: ${{ github.event.inputs.max_experiments || '3' }}
+          RUN_ONLY_FLAG: ${{ github.event.inputs.run_only || 'false' }}
+        run: |
+          RUN_ONLY=""
+          if [ "$RUN_ONLY_FLAG" = "true" ]; then
+            RUN_ONLY="--run-only"
+          fi
+          python research/agent.py --max-experiments "$MAX_EXPERIMENTS" $RUN_ONLY
+
+      - name: Commit results
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "[AutoResearch] Cycle results"
+          file_pattern: "research/results/*.json research/queue.yaml research/log.md"
+
+      - name: Update research issue
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Post latest cycle entry as a comment on the tracking issue
+          if [ -f research/log.md ]; then
+            LATEST=$(awk '/^## Cycle/{if(found) exit; found=1} found' research/log.md)
+            if [ -n "$LATEST" ]; then
+              ISSUE_NUM=$(gh issue list --label "autoresearch" --state open --json number -q '.[0].number' 2>/dev/null || echo "")
+              if [ -z "$ISSUE_NUM" ]; then
+                gh issue create \
+                  --title "AutoResearch Tracking" \
+                  --label "autoresearch" \
+                  --body "Tracking issue for automated research cycles. See comments for results."
+                ISSUE_NUM=$(gh issue list --label "autoresearch" --state open --json number -q '.[0].number')
+              fi
+              if [ -n "$ISSUE_NUM" ]; then
+                gh issue comment "$ISSUE_NUM" --body "$LATEST"
+              fi
+            fi
+          fi

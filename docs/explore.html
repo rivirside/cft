@@ -164,6 +164,8 @@
     <p>
       Three interactive visualizations - one shared dataset - showing how CFT,
       GFT, and TST each produce a different answer to the same question.
+      The framework also includes ICT, QST, and DCT (Dual-Context Theory with
+      per-agent seeking/conformity rates and intervention testing).
       <br><br>
       <strong style="color:#e6edf3">9 agents · 3 true clusters · infinite interpretations.</strong>
     </p>
@@ -214,7 +216,7 @@
 
         <ul class="insight-list">
           <li><strong>θ ≈ 0.85+</strong> - all singletons; even tight pairs don't qualify</li>
-          <li><strong>θ ≈ 0.72</strong> - cluster A forms (its weakest link is A₁–A₃ = 0.72)</li>
+          <li><strong>θ ≈ 0.72</strong> - cluster A forms (its weakest link is A₁-A₃ = 0.72)</li>
           <li><strong>θ ≈ 0.65</strong> - all three clusters fully formed</li>
           <li><strong>θ &lt; 0.15</strong> - cross-cluster links activate; large merged groups</li>
         </ul>
@@ -804,17 +806,17 @@ function renderCFT() {
     cftCallout.style.background = '#fef2f2';
     cftCallout.style.color = '#991b1b';
   } else if (theta >= 0.72) {
-    cftCallout.textContent = '🟡 Some pairs form, but weakest links prevent full clusters. A₁–A₃ = 0.72 is the bottleneck for cluster A.';
+    cftCallout.textContent = '🟡 Some pairs form, but weakest links prevent full clusters. A₁-A₃ = 0.72 is the bottleneck for cluster A.';
     cftCallout.style.borderColor = '#f59e0b';
     cftCallout.style.background = '#fffbeb';
     cftCallout.style.color = '#92400e';
   } else if (theta >= 0.65) {
-    cftCallout.textContent = '🟢 Clusters A and C formed. B still incomplete - weakest link B₁–B₃ = 0.65 not yet below θ.';
+    cftCallout.textContent = '🟢 Clusters A and C formed. B still incomplete - weakest link B₁-B₃ = 0.65 not yet below θ.';
     cftCallout.style.borderColor = '#16a34a';
     cftCallout.style.background = '#f0fdf4';
     cftCallout.style.color = '#14532d';
   } else if (theta >= 0.15) {
-    cftCallout.textContent = '✅ All three clusters fully formed. Cross-cluster links (≈ 0.05–0.15) still below threshold.';
+    cftCallout.textContent = '✅ All three clusters fully formed. Cross-cluster links (approx 0.05-0.15) still below threshold.';
     cftCallout.style.borderColor = '#2563eb';
     cftCallout.style.background = '#eff6ff';
     cftCallout.style.color = '#1e3a8a';
