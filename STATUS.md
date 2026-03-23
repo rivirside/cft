@@ -57,8 +57,6 @@ Last updated: 2026-03-21
 
 ## Architecture Decisions
 
-See `ADRLog.md` for full log. Key decisions:
-
 - DCT uses spectral embedding to derive initial positions from proximity/affinity matrices
 - Sustained interventions use `is_active(current_time, dt)` check where activation happens when `start <= current_time + dt` (fires one step before start time)
 - TraitMap uses sigmoid transform for index-based mappings, raw values for metadata-based

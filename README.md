@@ -1,212 +1,183 @@
-# CFT: Multi-Theory Group Formation Framework
+# CFT: Computational Social Dynamics
 
-A Python library for modeling how groups form, stabilize, and fracture. Implements five competing theories of collective behavior and provides tools to compare their predictions, run statistical validation, and infer parameters from data.
+A Python framework for modeling how human groups form, shift, and fracture. Simulate interventions, measure resilience, and test which social theories best predict collective behavior.
 
-## Quick Start
+## Install
 
 ```bash
 pip install -e .
 ```
 
+## Core Ideas
+
+**CFT** (Coalition Formation Theory) models groups as threshold-based cliques in affinity space. **DCT** (Dual-Context Theory) extends this with two coupled layers - proximity (who you're near) and alignment (what you believe) - where each agent has individual seeking and conformity rates.
+
+Four additional theories (GFT, QST, ICT, TST) serve as competing baselines for comparison.
+
+## Quick Start
+
 ```python
 from cft import SocialSimulator, HypothesisTester
 
-# Generate synthetic social data and compare all five theories
 sim = SocialSimulator(n_agents=40, scenario="clustered", k=3, T=30, seed=42)
 ht = HypothesisTester(simulator=sim)
 
 result = ht.compare_theories()
-print(result["rankings"])   # sorted by prediction accuracy
-print(result["ctai"])       # cross-theory agreement index
+print(result["rankings"])
 ```
 
-## Five Theories
+## Six Theories
 
-| Theory | Mechanism | Key Parameter | Best For |
-|--------|-----------|---------------|----------|
+| Theory | Mechanism | Key Param | Best For |
+|--------|-----------|-----------|----------|
 | **CFT** | Threshold cliques | `threshold` | Sharp boundaries, stable groups |
+| **DCT** | Dual-context layers | `mu`, `lam` | Code-switching, belief vs proximity |
 | **GFT** | Force-based clustering | `k`, `sigma` | Continuous drift, fuzzy boundaries |
-| **QST** | Quantum-inspired superposition | `n_states` | Uncertainty, observer effects |
+| **QST** | Quantum superposition | `n_states` | Uncertainty, observer effects |
 | **ICT** | Information cascades | `bandwidth` | Communication-limited settings |
-| **TST** | Potts model (statistical mechanics) | `temperature` | Phase transitions, large systems |
+| **TST** | Potts model | `temperature` | Phase transitions, large systems |
 
-## Scenarios
+## Interventions
 
-`SocialSimulator` generates synthetic interaction data in four regimes:
-
-```python
-from cft import SocialSimulator
-
-# Random - uniform MBTI, Gaussian opinions
-sim = SocialSimulator(n_agents=50, scenario="random", T=20, seed=0)
-
-# Clustered - k MBTI+opinion clusters
-sim = SocialSimulator(n_agents=50, scenario="clustered", k=4, T=20, seed=0)
-
-# Polarized - two opposing camps
-sim = SocialSimulator(n_agents=50, scenario="polarized", bias_strength=0.9, T=20, seed=0)
-
-# Hierarchical - influencers + followers
-sim = SocialSimulator(n_agents=50, scenario="hierarchical", n_influencers=5, T=20, seed=0)
-```
-
-## Theory Comparison
+Model perturbations and measure how groups respond:
 
 ```python
-from cft import HypothesisTester
+from cft import DCT, InterventionRunner, InterventionReport
+from cft import RemoveAgents, ShiftFeatures, NoiseShock, SustainedNoise
+from cft import Agent, TheoryParameters
+import numpy as np
 
-ht = HypothesisTester(simulator=sim)
+params = TheoryParameters(n_agents=30, n_features=4, random_seed=42)
+agents = [Agent(id=i, features=np.random.default_rng(42).normal(0, 1, 4)) for i in range(30)]
 
-# Fix circular ground-truth bias by using a temporal train/eval split (#23)
-result = ht.compare_theories(use_temporal_split=True, split_fraction=0.5)
+theory = DCT(params, mu=0.3, lam=0.05)
+theory.initialize_agents(agents)
 
-# Statistical validation across multiple independent runs (#27)
-result = ht.compare_theories(n_runs=10, significance_level=0.05)
-print(result["mean_similarity"])   # {theory: mean NMI}
-print(result["wilcoxon_pvalue"])   # None if n_runs < 5
+runner = InterventionRunner(
+    theory,
+    interventions=[
+        RemoveAgents(time=5.0, agent_ids=[0, 1]),       # remove leaders
+        ShiftFeatures(time=10.0, agent_ids=[5,6,7], delta=np.array([0,0,0,2])),  # propaganda
+    ],
+    sustained=[
+        SustainedNoise(start=15.0, end=25.0, sigma=0.5),  # crisis period
+    ],
+)
+snapshots = runner.run(t_max=30.0, dt=1.0)
 
-# Predict future group structure from early interactions
-result = ht.temporal_prediction(t_freeze=10, t_predict=25)
-
-# Sweep a simulator parameter
-results = ht.parameter_sweep("beta", [0.5, 1.0, 2.0, 4.0, 8.0])
-
-# Assert named theoretical claims
-result = ht.test_claim("all_theories_agree_on_clustered", beta=6.0, ctai_threshold=0.6)
-print(result["passed"])
+report = InterventionReport(snapshots, runner.log)
+print(report.summary())
+print(report.resilience_scores)
+print(report.vulnerability_ranking())
 ```
 
-## MCMC Parameter Inference
+**7 point-in-time interventions:** RemoveAgents, ShiftFeatures, AddAgent, NoiseShock, ModifyAffinity, ShiftProximity, ShiftAlignment
 
-Instead of setting interaction weights and theory parameters by hand, infer them from data:
+**3 sustained interventions:** SustainedShift, SustainedNoise, SustainedAffinityBias
+
+**Resilience analysis:** stability curves, fracture/merge detection, group survival, vulnerability ranking
+
+## TraitMap
+
+Derive behavioral parameters from agent personality features instead of setting them globally:
+
+```python
+from cft import DCT, TraitMap
+
+# From MBTI: extraversion -> seeking rate, judging/perceiving -> conformity
+trait_map = TraitMap.from_preset("mbti")
+
+theory = DCT(params, trait_map=trait_map)
+theory.initialize_agents(agents)
+# Each agent now has individual mu and lam derived from their features
+```
+
+## DCT: Dual-Context Theory
+
+DCT models two coupled social layers:
+- **Proximity** (fast) - who you're physically near, shifts quickly
+- **Alignment** (slow) - what you believe, changes gradually
+
+Groups form at the intersection. Agents can be near people they disagree with (workplace) or aligned with people far away (online communities).
+
+```python
+theory = DCT(
+    params,
+    mu=0.3,              # seeking rate (or per-agent array)
+    lam=0.05,            # conformity rate (or per-agent array)
+    proximity_matrix=P,  # optional: separate proximity data
+    alignment_features=A, # optional: separate alignment data
+)
+```
+
+## MCMC Inference
+
+Infer parameters from data instead of guessing:
 
 ```python
 from cft import MCMCInference, compare_theories_by_evidence, CFT, GFT
-from cft.integrations.mirofish import MiroFishAdapter
 
-adapter = MiroFishAdapter("sim_dir")
-adapter.load_agents()
-adapter.load_interactions()
-
-# Infer posterior over interaction weights for CFT (#21)
 mcmc = MCMCInference(adapter, CFT, seed=42)
 result = mcmc.infer_weights(n_samples=2000, burn_in=500)
-print(result.map_estimate)    # best-fit weights
-print(result.posterior_mean)  # posterior average
-print(result.posterior_std)   # uncertainty
+print(result.map_estimate)
 
-# Infer theory-specific parameters (#22)
-from cft import DEFAULT_THEORY_PARAM_SPECS
-result = mcmc.infer_theory_params(DEFAULT_THEORY_PARAM_SPECS["CFT"])
-
-# Joint inference over weights + parameters
-result = mcmc.infer_joint(param_specs=DEFAULT_THEORY_PARAM_SPECS["CFT"])
-
-# Complexity-penalised theory ranking via marginal likelihood (#24)
-log_ml = compare_theories_by_evidence(adapter, {"CFT": CFT, "GFT": GFT})
-print(log_ml)  # higher = better evidence (implicit Occam's razor)
+# Complexity-penalized theory ranking
+log_ml = compare_theories_by_evidence(adapter, {"CFT": CFT, "GFT": GFT, "DCT": DCT})
 ```
 
-## MiroFish / OASIS Integration
+## AutoResearch
 
-Load data from a MiroFish-Offline (OASIS format) simulation directory directly:
-
-```python
-from cft.integrations.mirofish import MiroFishAdapter
-
-# Normalized profiles.jsonl + actions.jsonl format
-adapter = MiroFishAdapter("/path/to/simulation")
-adapter.load_agents()
-adapter.load_interactions()
-
-# OASIS event-log format (from MiroFish-Offline / camel-oasis) (#26)
-adapter = MiroFishAdapter.from_oasis_dir("/path/to/oasis_sim")
-# adapter has agents and interactions pre-loaded
-
-affinity = adapter.compute_affinity_matrix()
-communities = adapter.extract_ground_truth_groups()
-adapter.cleanup_oasis()  # remove temp dir if created automatically
-```
+An automated experiment pipeline using GitHub Actions and the Claude API. The agent reads the experiment queue, runs simulations, interprets results, and logs findings.
 
 ```bash
-pip install -e ".[mirofish]"  # adds pandas, networkx
+# Trigger manually
+gh workflow run research.yml
 ```
 
-## Low-Level API
+See `research/queue.yaml` for pending experiments and `research/log.md` for results.
 
-```python
-from cft import Agent, TheoryParameters, CFT, PredictionTournament
-import numpy as np
+## Scenarios
 
-rng = np.random.default_rng(42)
-agents = [Agent(id=i, features=rng.normal(0, 1, 3)) for i in range(20)]
-params = TheoryParameters(n_agents=20, n_features=3, random_seed=42)
+`SocialSimulator` generates synthetic data in four regimes: `random`, `clustered`, `polarized`, `hierarchical`.
 
-tournament = PredictionTournament(agents, params)
-tournament.add_theory("CFT", CFT, threshold=0.5)
-tournament.add_theory("GFT", GFT, k=0.3, sigma=2.0)
-tournament.run(t_max=10.0, dt=1.0)
-scores = tournament.score(ground_truth)
-```
-
-## Visualization
-
-```python
-from cft.visualization import plot_groups, plot_theory_comparison, plot_convergence
-
-plot_groups(cft.get_groups(), agents)
-plot_theory_comparison(histories, agents)
-plot_convergence(histories)
-```
-
-## Notebooks
-
-- [`quickstart.ipynb`](notebooks/quickstart.ipynb) - 20 agents, CFT + GFT, visualize
-- [`theory_comparison.ipynb`](notebooks/theory_comparison.ipynb) - All 5 theories, tournament, parameter sweeps
-- [`mirofish_demo.ipynb`](notebooks/mirofish_demo.ipynb) - Load real simulation data, predict, score
-
-## Scoring Metrics
+## Scoring
 
 `PredictionTournament` scores theories with:
+- **PAS** - Prediction Accuracy Score (group count + partition similarity)
+- **DFI** - Dynamic Fidelity Index (temporal evolution accuracy)
+- **PSS** - Parameter Sensitivity Score (stability under perturbation)
+- **CTAI** - Cross-Theory Agreement Index (inter-theory consensus)
 
-- **PAS** (Prediction Accuracy Score) - group count + partition similarity + size accuracy
-- **DFI** (Dynamic Fidelity Index) - temporal evolution accuracy
-- **PSS** (Parameter Sensitivity Score) - stability under parameter perturbation
-- **CTAI** (Cross-Theory Agreement Index) - inter-theory consensus
+## Project Structure
 
-## Known Limitations
-
-See [`LIMITATIONS.md`](LIMITATIONS.md) for documented methodological caveats and their status.
+```
+cft/
+  theories/          # CFT, GFT, QST, ICT, TST, DCT
+  interventions.py   # 10 intervention types, runner, resilience report
+  affinity.py        # 4 affinity metrics
+  comparator.py      # NMI, Jaccard, pair agreement
+  tournament.py      # PredictionTournament
+  simulator.py       # SocialSimulator (4 scenarios)
+  hypothesis.py      # HypothesisTester
+  inference.py       # MCMC parameter inference
+  visualization.py   # Plotting and animation
+  integrations/
+    mirofish.py      # MiroFish/OASIS adapter
+docs/                # Interactive docs site
+research/            # AutoResearch pipeline
+tests/               # 371+ tests
+```
 
 ## Installation
 
 ```bash
 git clone https://github.com/rivirside/cft.git
 cd cft
-pip install -e ".[dev]"   # includes pytest, ruff
-pytest                     # 276+ tests
+pip install -e ".[dev]"
+pytest
 ```
 
 Optional extras: `[viz]` (plotly), `[mirofish]` (pandas, networkx), `[all]` (everything).
-
-## Repository Structure
-
-```
-cft/
-  theories/          # CFT, GFT, QST, ICT, TST implementations
-  affinity.py        # Shared affinity computation (4 metrics)
-  comparator.py      # TheoryComparator with NMI, Jaccard, pair agreement
-  tournament.py      # PredictionTournament with PAS/DFI/PSS/CTAI
-  simulator.py       # SocialSimulator (4 scenarios, no external deps)
-  hypothesis.py      # HypothesisTester (compare, sweep, temporal, claims)
-  inference.py       # MCMCInference over weights + theory parameters
-  visualization.py   # Plotting and animation
-  integrations/
-    mirofish.py      # MiroFish/OASIS adapter
-notebooks/           # Jupyter notebooks
-tests/               # 276+ tests
-LIMITATIONS.md       # Known methodological caveats
-```
 
 ## License
 
